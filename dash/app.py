@@ -5,6 +5,7 @@ from home.home import tela_home
 from jogadores.tela_jogadores import  tela_jogadores
 from jogadores.callbacks_jogadores import registrar_callbacks as registrar_callbacks_jogadores
 import dash_bootstrap_components as dbc
+from selecoes.tela_atualizar_selecoes import tela_selecoes
 
 #dash define que só irá procurar imagens em folders img
 app = dash.Dash(__name__, title="Copa SQL", assets_folder='img', assets_url_path='/img/',external_stylesheets=[dbc.themes.BOOTSTRAP])
@@ -88,7 +89,7 @@ def mudar_pagina(b1, b2, b3, b4, b5, b6, b7):
         return html.H1("3", style={'color': '#111827', 'fontSize': '100px'})
 
     elif botao_clicado == 'btn-selecoes':
-        return html.H1("4", style={'color': '#111827', 'fontSize': '100px'})
+        return tela_selecoes #html.H1("4", style={'color': '#111827', 'fontSize': '100px'})
 
     elif botao_clicado == 'btn-estadios':
         return html.H1("5", style={'color': '#111827', 'fontSize': '100px'})

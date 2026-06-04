@@ -2,6 +2,8 @@ import dash
 from dash import dcc, html, Input, Output, ctx
 
 from home.home import tela_home
+from jogadores.tela_jogadores import  tela_jogadores
+from jogadores.callbacks_jogadores import registrar_callbacks as registrar_callbacks_jogadores
 import dash_bootstrap_components as dbc
 
 #dash define que só irá procurar imagens em folders img
@@ -92,7 +94,7 @@ def mudar_pagina(b1, b2, b3, b4, b5, b6, b7):
         return html.H1("5", style={'color': '#111827', 'fontSize': '100px'})
         
     elif botao_clicado == 'btn-jogadores':
-        return html.H1("6", style={'color': '#111827', 'fontSize': '100px'})
+        return html.H1(tela_jogadores, style={'color': '#111827', 'fontSize': '100px'})
 
     elif botao_clicado == 'btn-partidas':
         return html.H1("7", style={'color': '#111827', 'fontSize': '100px'})
@@ -102,6 +104,7 @@ def mudar_pagina(b1, b2, b3, b4, b5, b6, b7):
         return tela_home
 
 
+registrar_callbacks_jogadores(app)
 
 if __name__ == '__main__':
     app.run(debug=True)

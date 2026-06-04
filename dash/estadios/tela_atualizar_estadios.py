@@ -89,6 +89,7 @@ formulario = dbc.Card(
                 ], style={"display": "flex", "justifyContent": "flex-end", "gap": "12px"}),
             ),
         ]),
+        html.Div(id='output-estadio', style={"marginTop": "16px", "fontWeight": "bold"})
     ]),
     style={
         "borderRadius": "12px",

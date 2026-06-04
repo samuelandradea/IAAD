@@ -102,6 +102,8 @@ formulario = dbc.Card(
                 ], style={"display": "flex", "justifyContent": "flex-end", "gap": "12px"}),
             ),
         ]),
+        
+        html.Div(id='output-selecao', style={"marginTop": "16px", "fontWeight": "bold"})
     ]),
     style={
         "borderRadius": "12px",
@@ -138,6 +140,8 @@ footer =  html.Footer(
         "marginTop": "auto"
     }
 )
+
+
 
 tela_selecoes = html.Div([
     dbc.Container([

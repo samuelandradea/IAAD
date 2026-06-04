@@ -4,10 +4,12 @@ from dash import dcc, html, Input, Output, ctx
 from home.home import tela_home
 from jogadores.tela_jogadores import  tela_jogadores
 from jogadores.callbacks_jogadores import registrar_callbacks as registrar_callbacks_jogadores
+from selecoes.tela_selecoes import tela_selecoes
+from selecoes.callbacks_selecoes import registrar_callbacks as registrar_callbacks_selecoes
 import dash_bootstrap_components as dbc
 
 #dash define que só irá procurar imagens em folders img
-app = dash.Dash(__name__, title="Copa SQL", assets_folder='img', assets_url_path='/img/',external_stylesheets=[dbc.themes.BOOTSTRAP])
+app = dash.Dash(__name__, title="Copa SQL", assets_folder='img', assets_url_path='/img/', external_stylesheets=[dbc.themes.BOOTSTRAP], suppress_callback_exceptions=True)
 
 
 
@@ -88,13 +90,13 @@ def mudar_pagina(b1, b2, b3, b4, b5, b6, b7):
         return html.H1("3", style={'color': '#111827', 'fontSize': '100px'})
 
     elif botao_clicado == 'btn-selecoes':
-        return html.H1("4", style={'color': '#111827', 'fontSize': '100px'})
+        return tela_selecoes
 
     elif botao_clicado == 'btn-estadios':
         return html.H1("5", style={'color': '#111827', 'fontSize': '100px'})
         
     elif botao_clicado == 'btn-jogadores':
-        return html.H1(tela_jogadores, style={'color': '#111827', 'fontSize': '100px'})
+        return tela_jogadores
 
     elif botao_clicado == 'btn-partidas':
         return html.H1("7", style={'color': '#111827', 'fontSize': '100px'})
@@ -105,6 +107,7 @@ def mudar_pagina(b1, b2, b3, b4, b5, b6, b7):
 
 
 registrar_callbacks_jogadores(app)
+registrar_callbacks_selecoes(app)
 
 if __name__ == '__main__':
     app.run(debug=True)

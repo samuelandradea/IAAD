@@ -1,0 +1,13 @@
+# ==============================================================================
+# COPA SQL - DEPENDÊNCIAS OFICIAIS DO PROJETO
+# ==============================================================================
+
+# Framework Web e Interface Gráfica
+dash==4.1.0
+dash-bootstrap-components==1.6.0
+
+# Conexão e Comunicação com o Banco de Dados MySQL
+mysql-connector-python==8.3.0
+
+# Manipulação, Processamento de Dados e Tabelas
+pandas==3.0.3

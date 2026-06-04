@@ -34,12 +34,7 @@ tela_cadastro = html.Div([
                 html.Label("Estádio", style=label_style),
                 dcc.Dropdown(
                     id="dropdown-estadio",
-                    options=[
-                        {"label": "Lusail Stadium", "value": 1},
-                        {"label": "Al Bayt Stadium", "value": 2},
-                        {"label": "974 Stadium", "value": 3},
-                        {"label": "Education City Stadium", "value": 4}
-                    ],
+                    options=[],
                     placeholder="Selecione o local",
                     style={"marginTop": "5px", "marginBottom": "20px"}
                 )
@@ -50,14 +45,7 @@ tela_cadastro = html.Div([
                 html.Label("Time 1 (Mandante)", style=label_style),
                 dcc.Dropdown(
                     id="dropdown-time1",
-                    options=[
-                        {"label": "Brasil", "value": 1},
-                        {"label": "França", "value": 2},
-                        {"label": "Marrocos", "value": 3},
-                        {"label": "Japão", "value": 4},
-                        {"label": "EUA", "value": 5},
-                        {"label": "Austrália", "value": 6}
-                    ],
+                    options=[],
                     placeholder="Selecione o país",
                     style={"marginTop": "5px", "marginBottom": "20px"}
                 )
@@ -66,14 +54,7 @@ tela_cadastro = html.Div([
                 html.Label("Time 2 (Visitante)", style=label_style),
                 dcc.Dropdown(
                     id="dropdown-time2",
-                    options=[
-                        {"label": "Brasil", "value": 1},
-                        {"label": "França", "value": 2},
-                        {"label": "Marrocos", "value": 3},
-                        {"label": "Japão", "value": 4},
-                        {"label": "EUA", "value": 5},
-                        {"label": "Austrália", "value": 6}
-                    ],
+                    options=[],
                     placeholder="Selecione o país",
                     style={"marginTop": "5px", "marginBottom": "20px"}
                 )

@@ -160,3 +160,27 @@ def registrar_callbacks(app):
             )
 
         return linhas, str(total_partidas), str(estadios_ativos), str(times_inscritos), partida_abertura
+
+    @app.callback(
+        Output('dropdown-estadio', 'options'),
+        Output('dropdown-time1', 'options'),
+        Output('dropdown-time2', 'options'),
+        Input('btn-cadastrar-partida', 'n_clicks'),
+        prevent_initial_call=True
+    )
+    def carregar_opcoes_dropdown(_):
+        try:
+            conn = obter_conexao()
+            cursor = conn.cursor()
+            
+            cursor.execute("SELECT id_estadios, nome_estadio FROM Estadios")
+            estadios = [{"label": row[1], "value": row[0]} for row in cursor.fetchall()]
+            
+            cursor.execute("SELECT id_selecoes, nome_selecao FROM Selecoes")
+            selecoes = [{"label": row[1], "value": row[0]} for row in cursor.fetchall()]
+            
+            conn.close()
+            return estadios, selecoes, selecoes
+        except Exception as e:
+            print(f"Erro ao carregar opções: {e}")
+            return [], [], []

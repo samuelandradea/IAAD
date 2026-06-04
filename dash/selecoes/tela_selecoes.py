@@ -15,7 +15,7 @@ tela_selecoes = html.Div([
                        style={'color': '#3c4b3b', 'fontSize': '14px'})
             ], lg=8, md=7, sm=12),
             dbc.Col([
-                dbc.Button("+ Cadastrar Nova Seleção", color="success",
+                dbc.Button("+ Cadastrar Nova Seleção", id='btn-cadastrar-selecao', n_clicks=0, color="success",
                            style={'backgroundColor': '#006e28', 'border': 'none', 'padding': '12px 24px',
                                   'borderRadius': '8px', 'fontWeight': '600', 'fontSize': '14px'})
             ], lg=4, md=5, sm=12, style={'display': 'flex', 'alignItems': 'center', 'justifyContent': 'flex-end'}),

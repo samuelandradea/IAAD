@@ -1,7 +1,7 @@
 import math
 import mysql.connector
 import pandas as pd
-from dash import Input, Output, State, ctx, ALL, html
+from dash import Input, Output, State, ctx, ALL, html, no_update
 import dash_bootstrap_components as dbc
 
 
@@ -58,8 +58,8 @@ def registrar_callbacks(app):
         Input('btn-selecoes',            'n_clicks'),
     )
     def renderizar_tabela(pagina_atual, _):
-        selecoes      = buscar_selecoes()
-        total         = len(selecoes)
+        selecoes = buscar_selecoes()
+        total    = len(selecoes)
 
         if total == 0:
             linha_vazia = html.Tr([
@@ -77,9 +77,9 @@ def registrar_callbacks(app):
 
         linhas = [
             html.Tr([
-                html.Td(s['nome'],           style={'fontSize': '15px', 'fontWeight': '600', 'color': '#131b2e', 'padding': '14px 24px'}),
-                html.Td(s['confederacao'],   style={'fontSize': '13px', 'fontFamily': 'monospace', 'color': '#3c4b3b', 'padding': '14px 24px'}),
-                html.Td(str(s['titulos']),   style={'fontSize': '13px', 'fontFamily': 'monospace', 'color': '#131b2e', 'padding': '14px 24px'}),
+                html.Td(s['nome'],         style={'fontSize': '15px', 'fontWeight': '600', 'color': '#131b2e', 'padding': '14px 24px'}),
+                html.Td(s['confederacao'], style={'fontSize': '13px', 'fontFamily': 'monospace', 'color': '#3c4b3b', 'padding': '14px 24px'}),
+                html.Td(str(s['titulos']), style={'fontSize': '13px', 'fontFamily': 'monospace', 'color': '#131b2e', 'padding': '14px 24px'}),
                 html.Td([
                     html.Span("✏️", style={'cursor': 'pointer', 'marginRight': '12px', 'fontSize': '16px'}),
                     html.Span("🗑️", style={'cursor': 'pointer', 'fontSize': '16px'})
@@ -129,3 +129,51 @@ def registrar_callbacks(app):
         )
 
         return linhas, info, botoes
+
+    # CALLBACK — botões dinâmicos navegam pelo nav-store
+    @app.callback(
+        Output('nav-store', 'data', allow_duplicate=True),
+        Input('btn-cadastrar-selecao', 'n_clicks'),
+        prevent_initial_call=True
+    )
+    def ir_para_cadastro(_):
+        return 'cadastro-selecao'
+
+    @app.callback(
+        Output('nav-store', 'data', allow_duplicate=True),
+        Input('btn-cancelar-cadastro-selecao', 'n_clicks'),
+        prevent_initial_call=True
+    )
+    def cancelar_cadastro(_):
+        return 'selecoes'
+
+    # CALLBACK — INSERT nova seleção no banco
+    @app.callback(
+        Output('cadastro-selecao-alert', 'children'),
+        Output('nav-store', 'data', allow_duplicate=True),
+        Input('btn-salvar-selecao', 'n_clicks'),
+        State('input-nome-selecao',       'value'),
+        State('input-continente-selecao', 'value'),
+        State('input-tecnico-selecao',    'value'),
+        State('input-titulos-selecao',    'value'),
+        prevent_initial_call=True
+    )
+    def cadastrar_selecao(n, nome, continente, tecnico, titulos):
+        if not all([nome, continente, tecnico, titulos is not None]):
+            return dbc.Alert("Preencha todos os campos.", color="warning", dismissable=True), no_update
+
+        try:
+            conn = obter_conexao()
+            cursor = conn.cursor()
+            cursor.execute("SELECT COALESCE(MAX(id_selecoes), 0) + 1 FROM `Copa do Mundo de Futebol`.`Selecoes`")
+            novo_id = cursor.fetchone()[0]
+            cursor.execute(
+                "INSERT INTO `Copa do Mundo de Futebol`.`Selecoes` (id_selecoes, nome_selacao, continente, tecnico, titulos) VALUES (%s, %s, %s, %s, %s)",
+                (novo_id, nome, continente, tecnico, int(titulos))
+            )
+            conn.commit()
+            conn.close()
+            return None, 'selecoes'
+        except Exception as e:
+            print(f"Erro ao cadastrar seleção: {e}")
+            return dbc.Alert(f"Erro ao cadastrar: {e}", color="danger", dismissable=True), no_update

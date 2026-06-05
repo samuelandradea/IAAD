@@ -4,10 +4,13 @@ from dash import dcc, html, Input, Output, ctx
 from home.home import tela_home
 from jogadores.tela_jogadores import  tela_jogadores
 from jogadores.callbacks_jogadores import registrar_callbacks as registrar_callbacks_jogadores
+from estadios.tela_estadios import tela_estadios
+from estadios.callbacks_estadios import registrar_callbacks as registrar_callbacks_estadios
+from estadios.cadastro_estadios import tela_cadastro_estadio
 import dash_bootstrap_components as dbc
 
 #dash define que só irá procurar imagens em folders img
-app = dash.Dash(__name__, title="Copa SQL", assets_folder='img', assets_url_path='/img/',external_stylesheets=[dbc.themes.BOOTSTRAP])
+app = dash.Dash(__name__, title="Copa SQL", assets_folder='img', assets_url_path='/img/',external_stylesheets=[dbc.themes.BOOTSTRAP], suppress_callback_exceptions=True)
 
 
 
@@ -24,6 +27,8 @@ estilo_botao_ativo.update({'color': '#15803d', 'borderBottom': '3px solid #15803
 app.layout = html.Div([
     
     dcc.Store(id='filtered-data-store'),
+    dcc.Store(id='estadios-reload-trigger', data=0),
+    dcc.Store(id='nav-estadios', data='lista'),
 
     # HEADER 
     html.Div([
@@ -73,10 +78,11 @@ app.layout = html.Div([
         Input('btn-selecoes', 'n_clicks'),
         Input('btn-estadios', 'n_clicks'),
         Input('btn-jogadores', 'n_clicks'),
-        Input('btn-partidas', 'n_clicks')
+        Input('btn-partidas', 'n_clicks'),
+        Input('nav-estadios',   'data')
     ]
 )
-def mudar_pagina(b1, b2, b3, b4, b5, b6, b7):
+def mudar_pagina(b1, b2, b3, b4, b5, b6, b7, nav):
     
     botao_clicado = ctx.triggered_id
     
@@ -91,7 +97,13 @@ def mudar_pagina(b1, b2, b3, b4, b5, b6, b7):
         return html.H1("4", style={'color': '#111827', 'fontSize': '100px'})
 
     elif botao_clicado == 'btn-estadios':
-        return html.H1("5", style={'color': '#111827', 'fontSize': '100px'})
+        return tela_estadios
+    
+    elif botao_clicado == 'nav-estadios':
+        if nav == 'cadastro':
+            return tela_cadastro_estadio
+        return tela_estadios
+
         
     elif botao_clicado == 'btn-jogadores':
         return html.H1(tela_jogadores, style={'color': '#111827', 'fontSize': '100px'})
@@ -105,6 +117,7 @@ def mudar_pagina(b1, b2, b3, b4, b5, b6, b7):
 
 
 registrar_callbacks_jogadores(app)
+registrar_callbacks_estadios(app)
 
 if __name__ == '__main__':
     app.run(debug=True)

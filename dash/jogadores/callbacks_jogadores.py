@@ -16,7 +16,7 @@ def obter_conexao():
     return mysql.connector.connect(
         host="localhost",
         user="root",
-        password=os.getenv("DB_PASSWORD", "1234"),
+        password=os.getenv("DB_PASSWORD"),
         database="Copa do Mundo de Futebol"
     )
 

@@ -1,6 +1,7 @@
 from dash import html, dcc
 import dash_bootstrap_components as dbc
 
+
 tela_jogadores = html.Div([
 
     dcc.Store(id='jogadores-pagina-atual', data=1),

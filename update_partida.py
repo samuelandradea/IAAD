@@ -4,13 +4,17 @@ from dash import dcc, html, Input, Output, State
 import mysql.connector
 import pandas as pd
 from datetime import datetime  # <-- Importação necessária para conversão de datas
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # 1. CONFIGURAÇÃO DE CONEXÃO
 def obter_conexao():
     return mysql.connector.connect(
         host="localhost",
         user="root",                  
-        password="1234",
+        password=os.getenv("DB_PASSWORD", "1234"),
         database="Copa do Mundo de Futebol"
     )
 

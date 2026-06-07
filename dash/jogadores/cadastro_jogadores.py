@@ -11,8 +11,8 @@ import random
 import mysql.connector
 import random
 
-# Importando o seu "trigger" do outro arquivo
-from validators import tratar_dados_jogador 
+# Importando o seu "middleware" do outro arquivo
+from jogadores.validators import tratar_dados_jogador
 
 def obter_conexao():
     return mysql.connector.connect(
@@ -73,7 +73,7 @@ estilo_label = {
 }
 
 
-tela_jogadores = html.Div([
+tela_cadastro_jogadores = html.Div([
     dbc.Container([
         
         
@@ -98,8 +98,8 @@ tela_jogadores = html.Div([
                 # LINHSeleção Nacional e Número da Camisa
                 dbc.Row([
                     dbc.Col([
-                        html.Label("Seleção Nacional (ID)", style=estilo_label),
-                        dbc.Input(id="cadastro-selecao", type="number", min=1, placeholder="Ex: 1 (Para Brasil)", className="mb-4")
+                        html.Label("Seleção Nacional", style=estilo_label),
+                        dbc.Input(id="cadastro-selecao", type="text", placeholder="Ex: Brasil", className="mb-4")
                     ], md=6),
                     
                     dbc.Col([
@@ -179,8 +179,8 @@ def realizar_cadastro(n_clicks, nome, selecao, camisa, posicao, nascimento):
         
         return alerta, nome, selecao, camisa, posicao, nascimento
     
-    # 2. Envia para o MySQL
-    sucesso, mensagem = cadastrar_jogador_db(nome, posicao, int(camisa), nascimento, int(selecao))
+    #Envia para o MySQL
+    sucesso, mensagem = cadastrar_jogador_db(nome, posicao, camisa, nascimento, selecao)
     
     
     if sucesso:

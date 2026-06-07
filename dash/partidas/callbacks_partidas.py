@@ -1,12 +1,16 @@
 import mysql.connector
 import pandas as pd
 from dash import Input, Output, State, ctx, html
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def obter_conexao():
     return mysql.connector.connect(
         host="localhost",
         user="root",
-        password="1234",
+        password=os.getenv("DB_PASSWORD"),
         database="Copa do Mundo de Futebol"
     )
 

@@ -24,21 +24,24 @@ def obter_conexao():
 def buscar_jogadores():
     try:
         conn = obter_conexao()
-        query = """
+        cursor = conn.cursor(dictionary=True)  
+        cursor.execute("""
             SELECT 
                 j.nome_jogador AS nome,
                 j.posicao      AS posicao,
                 j.numero_camisa AS numero,
                 s.nome_selecao  AS selecao,
+                j.id_jogador    AS id_jogador,
                 TIMESTAMPDIFF(YEAR, j.data_nascimento, CURDATE()) AS idade
             FROM `Copa do Mundo de Futebol`.`Jogadores` j
             JOIN `Copa do Mundo de Futebol`.`Selecoes` s
               ON j.Selecoes_id_selecoes = s.id_selecoes
             ORDER BY j.nome_jogador
-        """
-        df = pd.read_sql(query, conn)
+        """)
+        rows = cursor.fetchall()
+        cursor.close()
         conn.close()
-        return df.to_dict('records')
+        return rows
     except Exception as e:
         print(f"Erro ao buscar jogadores: {e}")
         return []
@@ -95,10 +98,18 @@ def registrar_callbacks(app):
                 html.Td(j['selecao'],     style={'fontSize': '14px', 'color': '#4b5563', 'padding': '14px 16px'}),
                 html.Td(str(j['idade']),  style={'fontSize': '14px', 'color': '#4b5563', 'padding': '14px 16px'}),
                 html.Td([
-                    html.Span("✏️", style={'cursor': 'pointer', 'marginRight': '15px'}),
-                    html.Span("🗑️", style={'cursor': 'pointer', 'color': '#ef4444'})
-                ], style={'textAlign': 'right', 'padding': '14px 16px', 'fontSize': '14px'})
-            ], style={'borderBottom': '1px solid #f3f4f6', 'verticalAlign': 'middle'})
+                    html.Span(
+                        "✏️",
+                        id={'type': 'btn-editar-jogador', 'index': j['id_jogador']},
+                        n_clicks=0,
+                        style={'cursor': 'pointer', 'marginRight': '10px', 'fontSize': '16px'}
+                    ),
+                    html.Span(
+                        "🗑️",
+                        style={'cursor': 'pointer', 'color': '#ef4444', 'fontSize': '16px'}
+                    )
+                ], style={'textAlign': 'right', 'padding': '14px 16px'}),  
+            ], style={'borderBottom': '1px solid #f3f4f6', 'verticalAlign': 'middle'})  
             for j in slice_
         ]
 

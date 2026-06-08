@@ -1,9 +1,7 @@
-from dash import html, dcc
+from dash import html
 import dash_bootstrap_components as dbc
 
 tela_jogadores = html.Div([
-
-    dcc.Store(id='jogadores-pagina-atual', data=1),
 
     dbc.Container([
 
@@ -33,7 +31,7 @@ tela_jogadores = html.Div([
                     ]),
                     style={'backgroundColor': '#eff6ff', 'borderBottom': '1px solid #e5e7eb'}
                 ),
-                html.Tbody(id='tabela-jogadores-body'),  # ← preenchido pelo callback
+                html.Tbody(id='tabela-jogadores-body'),
             ], borderless=True, hover=True, style={'marginBottom': '0px', 'width': '100%', 'tableLayout': 'fixed'}),
 
             html.Div([

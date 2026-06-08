@@ -8,6 +8,8 @@ import dash_bootstrap_components as dbc
 from partidas.layout_partidas import layout_partidas_container
 from partidas.callbacks_partidas import registrar_callbacks as registrar_callbacks_partidas
 
+
+from jogadores.main_jogadores import tela_principal_jogadores
 #dash define que só irá procurar imagens em folders img
 app = dash.Dash(__name__, title="Copa SQL", assets_folder='img', assets_url_path='/img/',external_stylesheets=[dbc.themes.BOOTSTRAP], suppress_callback_exceptions=True)
 
@@ -96,7 +98,7 @@ def mudar_pagina(b1, b2, b3, b4, b5, b6, b7):
         return html.H1("5", style={'color': '#111827', 'fontSize': '100px'})
         
     elif botao_clicado == 'btn-jogadores':
-        return html.H1(tela_jogadores, style={'color': '#111827', 'fontSize': '100px'})
+        return tela_principal_jogadores
 
     elif botao_clicado == 'btn-partidas':
         return layout_partidas_container

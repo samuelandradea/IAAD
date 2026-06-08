@@ -1,3 +1,4 @@
+import os
 import dash_bootstrap_components as dbc
 from dash import html, Input, Output, State, callback
 import random
@@ -18,7 +19,7 @@ def obter_conexao():
     return mysql.connector.connect(
         host="localhost",
         user="root",
-        password="Matheusdev#2026",
+        password=os.getenv("DB_PASSWORD"),
         database="Copa do Mundo de Futebol"
     )
 

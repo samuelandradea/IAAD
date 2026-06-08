@@ -75,34 +75,24 @@ BOTOES_MENU = ['btn-home', 'btn-dashboards', 'btn-docs',
     Input('btn-estadios',   'n_clicks'),
     Input('btn-jogadores',  'n_clicks'),
     Input('btn-partidas',   'n_clicks'),
-    prevent_initial_call=False
+    prevent_initial_call=True
 )
 def atualizar_rota(b1, b2, b3, b4, b5, b6, b7):
-    botao = ctx.triggered_id
     mapa = {
-        'btn-home':       'home',
-        'btn-dashboards': 'dashboards',
-        'btn-docs':       'docs',
-        'btn-selecoes':   'selecoes',
-        'btn-estadios':   'estadios',
-        'btn-jogadores':  'jogadores',
-        'btn-partidas':   'partidas',
+        'btn-home': 'home', 'btn-dashboards': 'dashboards',
+        'btn-docs': 'docs', 'btn-selecoes': 'selecoes',
+        'btn-estadios': 'estadios', 'btn-jogadores': 'jogadores',
+        'btn-partidas': 'partidas',
     }
-    return mapa.get(botao, 'home')
+    return mapa.get(ctx.triggered_id, 'home')
 
 
 @app.callback(
     Output('page-content', 'children'),
     Input('pagina-atual-store', 'data'),
-    State('jogador-editando-id', 'data'),
     prevent_initial_call=False
 )
-def renderizar_pagina(pagina, id_jogador):
-    # se a rota for edição, não renderiza nada — o abrir_edicao já cuidou disso
-    if pagina == 'editar-jogador':
-        from dash.exceptions import PreventUpdate
-        raise PreventUpdate
-
+def renderizar_pagina(pagina):
     if pagina == 'jogadores':  return tela_principal_jogadores
     if pagina == 'dashboards': return html.H1("2")
     if pagina == 'docs':       return html.H1("3")

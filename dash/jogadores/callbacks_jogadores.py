@@ -1,4 +1,5 @@
 import math
+from dash.exceptions import PreventUpdate
 import mysql.connector
 import pandas as pd
 from dash import Input, Output, State, ctx, ALL, html
@@ -60,8 +61,16 @@ def registrar_callbacks(app):
     def atualizar_pagina(_, pagina_atual):
         triggered = ctx.triggered_id
         if triggered is None:
-            return pagina_atual
-        return triggered['index']
+            raise PreventUpdate
+
+        idx = triggered['index']
+
+        if idx == 0:    # botão 
+            return max(1, pagina_atual - 1)
+        if idx == -1:   # botão >
+            return pagina_atual + 1  # o disabled já impede passar do limite
+
+        return idx  # número de página direto
 
     # CALLBACK 2 — renderiza tbody + info + botões de paginação
     @app.callback(
@@ -121,38 +130,45 @@ def registrar_callbacks(app):
         s_normal = {'marginRight': '5px', 'color': '#4b5563', 'border': '1px solid #e5e7eb'}
         s_nav    = {'border': '1px solid #e5e7eb', 'color': '#4b5563', 'marginRight': '5px'}
 
-        botoes = [
+        def paginas_visiveis(atual, total):
+            if total <= 7:
+                return list(range(1, total + 1))
+            if atual <= 4:
+                return [1, 2, 3, 4, 5, '...', total]
+            if atual >= total - 3:
+                return [1, '...', total-4, total-3, total-2, total-1, total]
+            return [1, '...', atual-1, atual, atual+1, '...', total]
+
+        botoes = []
+
+        # Botão < com index fixo 'prev'
+        botoes.append(
             dbc.Button("<",
-                       id={'type': 'btn-pagina-jogador', 'index': max(1, pagina_atual - 1)},
-                       color="light", size="sm", style=s_nav,
-                       disabled=(pagina_atual == 1)),
-        ]
+                    id={'type': 'btn-pagina-jogador', 'index': 0},  # 0 = prev
+                    color="light", size="sm", style=s_nav,
+                    disabled=(pagina_atual == 1))
+        )
 
-        # janela deslizante de páginas visíveis
-        visiveis = sorted(set(
-            [1] +
-            list(range(max(2, pagina_atual - 1), min(total_paginas, pagina_atual + 2))) +
-            [total_paginas]
-        ))
+        for p in paginas_visiveis(pagina_atual, total_paginas):
+            if p == '...':
+                botoes.append(html.Span("...", style={'margin': '0 8px', 'color': '#9ca3af', 'lineHeight': '32px'}))
+            else:
+                botoes.append(
+                    dbc.Button(str(p),
+                            id={'type': 'btn-pagina-jogador', 'index': p},
+                            color="success" if p == pagina_atual else "light",
+                            size="sm",
+                            style=s_ativo if p == pagina_atual else s_normal)
+                )
 
-        ultima = 0
-        for p in visiveis:
-            if ultima and p - ultima > 1:
-                botoes.append(html.Span("...", style={'margin': '0 8px', 'color': '#9ca3af'}))
-            botoes.append(
-                dbc.Button(str(p),
-                           id={'type': 'btn-pagina-jogador', 'index': p},
-                           color="success" if p == pagina_atual else "light",
-                           size="sm",
-                           style=s_ativo if p == pagina_atual else s_normal)
-            )
-            ultima = p
-
+        # Botão > com index fixo -1
         botoes.append(
             dbc.Button(">",
-                       id={'type': 'btn-pagina-jogador', 'index': min(total_paginas, pagina_atual + 1)},
-                       color="light", size="sm", style={'border': '1px solid #e5e7eb', 'color': '#4b5563'},
-                       disabled=(pagina_atual == total_paginas))
+                    id={'type': 'btn-pagina-jogador', 'index': -1},  # -1 = next
+                    color="light", size="sm",
+                    style={'border': '1px solid #e5e7eb', 'color': '#4b5563'},
+                    disabled=(pagina_atual == total_paginas))
         )
+        
 
         return linhas, info, botoes

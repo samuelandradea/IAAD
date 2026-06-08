@@ -13,6 +13,9 @@ from selecoes.tela_atualizar_selecoes import tela_selecoes as tela_atualizar_sel
 from selecoes.tela_cadastro_selecao import tela_cadastro_selecao
 from selecoes.tela_selecoes import tela_selecoes
 import dash_bootstrap_components as dbc
+from estadios.tela_estadios import tela_estadios
+from estadios.cadastro_estadios import tela_cadastro_estadio
+from estadios.callbacks_estadios import registrar_callbacks as registrar_callbacks_estadios
 from estadios.tela_atualizar_estadios import tela_estadios as tela_atualizar_estadios
 from estadios.callbacks_atualizar_estadios import registrar_callbacks as registrar_callbacks_atualizar_estadios
 
@@ -34,7 +37,8 @@ PAGINAS = {
     'selecoes': tela_selecoes,
     'atualizar-selecoes': tela_atualizar_selecoes,
     'cadastro-selecao': tela_cadastro_selecao,
-    'estadios': tela_atualizar_estadios,
+    'estadios': tela_estadios,
+    'atualizar-estadios': tela_atualizar_estadios,
     'jogadores': tela_principal_jogadores,
     'partidas': layout_partidas_container,
 }
@@ -42,6 +46,8 @@ PAGINAS = {
 app.layout = html.Div([
 
     dcc.Store(id='filtered-data-store'),
+    dcc.Store(id='estadios-reload-trigger', data=0),
+    dcc.Store(id='nav-estadios', data='lista'),
     dcc.Store(id='nav-store', data='home'),
     dcc.Store(id='jogador-editando-id', data=None),
     dcc.Store(id='jogadores-pagina-atual', data=1),
@@ -96,22 +102,29 @@ def atualizar_rota(b1, b2, b3, b4, b5, b6, b7):
     }
     return mapa.get(ctx.triggered_id, 'home')
 
+
 @app.callback(
     Output('page-content', 'children'),
     Input('nav-store', 'data'),
+    Input('nav-estadios', 'data'),
     prevent_initial_call=False,
 )
-def renderizar_pagina(pagina):
+def renderizar_pagina(pagina, nav_estadios):
     if pagina == 'dashboards':
         return html.H1("2")
     if pagina == 'docs':
         return html.H1("3")
+    if pagina == 'estadios':
+        if nav_estadios == 'cadastro':
+            return tela_cadastro_estadio
+        return tela_estadios
     return PAGINAS.get(pagina, tela_home)
 
 
 registrar_callbacks_jogadores(app)
 registrar_callbacks_atualizar_selecoes(app)
 registrar_callbacks_atualizar_estadios(app)
+registrar_callbacks_estadios(app)
 registrar_callbacks_editar_jogador(app)
 registrar_callbacks_selecoes(app)
 registrar_callbacks_partidas(app)

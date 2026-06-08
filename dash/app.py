@@ -7,10 +7,14 @@ from jogadores.callbacks_jogadores import registrar_callbacks as registrar_callb
 from jogadores.main_jogadores import tela_principal_jogadores
 from partidas.callbacks_partidas import registrar_callbacks as registrar_callbacks_partidas
 from partidas.layout_partidas import layout_partidas_container
+from selecoes.callbacks_atualizar_selecoes import registrar_callbacks as registrar_callbacks_atualizar_selecoes
 from selecoes.callbacks_selecoes import registrar_callbacks as registrar_callbacks_selecoes
+from selecoes.tela_atualizar_selecoes import tela_selecoes as tela_atualizar_selecoes
 from selecoes.tela_cadastro_selecao import tela_cadastro_selecao
 from selecoes.tela_selecoes import tela_selecoes
 import dash_bootstrap_components as dbc
+from estadios.tela_atualizar_estadios import tela_estadios as tela_atualizar_estadios
+from estadios.callbacks_atualizar_estadios import registrar_callbacks as registrar_callbacks_atualizar_estadios
 
 app = dash.Dash(
     __name__, title="Copa SQL",
@@ -28,7 +32,9 @@ estilo_botao_ativo = {**estilo_botao_padrao, 'color': '#15803d', 'borderBottom':
 PAGINAS = {
     'home': tela_home,
     'selecoes': tela_selecoes,
+    'atualizar-selecoes': tela_atualizar_selecoes,
     'cadastro-selecao': tela_cadastro_selecao,
+    'estadios': tela_atualizar_estadios,
     'jogadores': tela_principal_jogadores,
     'partidas': layout_partidas_container,
 }
@@ -90,7 +96,6 @@ def atualizar_rota(b1, b2, b3, b4, b5, b6, b7):
     }
     return mapa.get(ctx.triggered_id, 'home')
 
-
 @app.callback(
     Output('page-content', 'children'),
     Input('nav-store', 'data'),
@@ -101,12 +106,12 @@ def renderizar_pagina(pagina):
         return html.H1("2")
     if pagina == 'docs':
         return html.H1("3")
-    if pagina == 'estadios':
-        return html.H1("5")
     return PAGINAS.get(pagina, tela_home)
 
 
 registrar_callbacks_jogadores(app)
+registrar_callbacks_atualizar_selecoes(app)
+registrar_callbacks_atualizar_estadios(app)
 registrar_callbacks_editar_jogador(app)
 registrar_callbacks_selecoes(app)
 registrar_callbacks_partidas(app)

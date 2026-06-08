@@ -1,26 +1,22 @@
 import dash
-from dash import State, dcc, html, Input, Output, ctx
-from dash.exceptions import PreventUpdate
+from dash import dcc, html, Input, Output, ctx
 
 from home.home import tela_home
-from jogadores.tela_jogadores import tela_jogadores
-from jogadores.callbacks_jogadores import registrar_callbacks as registrar_callbacks_jogadores
 from jogadores.callbacks_UPDATE_jogadores import registrar_callbacks as registrar_callbacks_editar_jogador
-import dash_bootstrap_components as dbc
-from partidas.layout_partidas import layout_partidas_container
-from partidas.callbacks_partidas import registrar_callbacks as registrar_callbacks_partidas
-
-
+from jogadores.callbacks_jogadores import registrar_callbacks as registrar_callbacks_jogadores
 from jogadores.main_jogadores import tela_principal_jogadores
-#dash define que só irá procurar imagens em folders img
-app = dash.Dash(__name__, title="Copa SQL", assets_folder='img', assets_url_path='/img/',external_stylesheets=[dbc.themes.BOOTSTRAP], suppress_callback_exceptions=True)
-
+from partidas.callbacks_partidas import registrar_callbacks as registrar_callbacks_partidas
+from partidas.layout_partidas import layout_partidas_container
+from selecoes.callbacks_selecoes import registrar_callbacks as registrar_callbacks_selecoes
+from selecoes.tela_cadastro_selecao import tela_cadastro_selecao
+from selecoes.tela_selecoes import tela_selecoes
+import dash_bootstrap_components as dbc
 
 app = dash.Dash(
     __name__, title="Copa SQL",
     assets_folder='img', assets_url_path='/img/',
     external_stylesheets=[dbc.themes.BOOTSTRAP],
-    suppress_callback_exceptions=True
+    suppress_callback_exceptions=True,
 )
 
 estilo_botao_padrao = {
@@ -29,10 +25,18 @@ estilo_botao_padrao = {
 }
 estilo_botao_ativo = {**estilo_botao_padrao, 'color': '#15803d', 'borderBottom': '3px solid #15803d'}
 
+PAGINAS = {
+    'home': tela_home,
+    'selecoes': tela_selecoes,
+    'cadastro-selecao': tela_cadastro_selecao,
+    'jogadores': tela_principal_jogadores,
+    'partidas': layout_partidas_container,
+}
+
 app.layout = html.Div([
 
-    dcc.Store(id='pagina-atual-store', data='home'),
     dcc.Store(id='filtered-data-store'),
+    dcc.Store(id='nav-store', data='home'),
     dcc.Store(id='jogador-editando-id', data=None),
     dcc.Store(id='jogadores-pagina-atual', data=1),
 
@@ -63,25 +67,25 @@ app.layout = html.Div([
 ], style={'margin': '0', 'padding': '0', 'backgroundColor': '#f9fafb', 'minHeight': '100vh'})
 
 
-BOTOES_MENU = ['btn-home', 'btn-dashboards', 'btn-docs',
-               'btn-selecoes', 'btn-estadios', 'btn-jogadores', 'btn-partidas']
-
 @app.callback(
-    Output('pagina-atual-store', 'data'),
-    Input('btn-home',       'n_clicks'),
+    Output('nav-store', 'data'),
+    Input('btn-home', 'n_clicks'),
     Input('btn-dashboards', 'n_clicks'),
-    Input('btn-docs',       'n_clicks'),
-    Input('btn-selecoes',   'n_clicks'),
-    Input('btn-estadios',   'n_clicks'),
-    Input('btn-jogadores',  'n_clicks'),
-    Input('btn-partidas',   'n_clicks'),
-    prevent_initial_call=True
+    Input('btn-docs', 'n_clicks'),
+    Input('btn-selecoes', 'n_clicks'),
+    Input('btn-estadios', 'n_clicks'),
+    Input('btn-jogadores', 'n_clicks'),
+    Input('btn-partidas', 'n_clicks'),
+    prevent_initial_call=True,
 )
 def atualizar_rota(b1, b2, b3, b4, b5, b6, b7):
     mapa = {
-        'btn-home': 'home', 'btn-dashboards': 'dashboards',
-        'btn-docs': 'docs', 'btn-selecoes': 'selecoes',
-        'btn-estadios': 'estadios', 'btn-jogadores': 'jogadores',
+        'btn-home': 'home',
+        'btn-dashboards': 'dashboards',
+        'btn-docs': 'docs',
+        'btn-selecoes': 'selecoes',
+        'btn-estadios': 'estadios',
+        'btn-jogadores': 'jogadores',
         'btn-partidas': 'partidas',
     }
     return mapa.get(ctx.triggered_id, 'home')
@@ -89,21 +93,23 @@ def atualizar_rota(b1, b2, b3, b4, b5, b6, b7):
 
 @app.callback(
     Output('page-content', 'children'),
-    Input('pagina-atual-store', 'data'),
-    prevent_initial_call=False
+    Input('nav-store', 'data'),
+    prevent_initial_call=False,
 )
 def renderizar_pagina(pagina):
-    if pagina == 'jogadores':  return tela_principal_jogadores
-    if pagina == 'dashboards': return html.H1("2")
-    if pagina == 'docs':       return html.H1("3")
-    if pagina == 'selecoes':   return html.H1("4")
-    if pagina == 'estadios':   return html.H1("5")
-    if pagina == 'partidas':   return html.H1("7")
-    return tela_home
+    if pagina == 'dashboards':
+        return html.H1("2")
+    if pagina == 'docs':
+        return html.H1("3")
+    if pagina == 'estadios':
+        return html.H1("5")
+    return PAGINAS.get(pagina, tela_home)
 
 
 registrar_callbacks_jogadores(app)
 registrar_callbacks_editar_jogador(app)
+registrar_callbacks_selecoes(app)
+registrar_callbacks_partidas(app)
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -1,9 +1,8 @@
-from dash import html, dcc
+from dash import html
 import dash_bootstrap_components as dbc
 
-tela_jogadores = html.Div([
 
-    dcc.Store(id='jogadores-pagina-atual', data=1),
+tela_jogadores = html.Div([
 
     dbc.Container([
 
@@ -13,9 +12,15 @@ tela_jogadores = html.Div([
                 html.P("Registry of all competing athletes for the FIFA World Cup 2026 database.", style={'color': '#6b7280', 'fontSize': '14px'})
             ], lg=8, md=7, sm=12),
             dbc.Col([
-                dbc.Button("+ Cadastrar Novo Jogador", color="success",
-                           style={'backgroundColor': '#047857', 'border': 'none', 'padding': '10px 20px',
-                                  'borderRadius': '8px', 'fontWeight': '600', 'fontSize': '14px'})
+                dbc.Button(
+                    "+ Cadastrar Novo Jogador",
+                    id='btn-ir-cadastro',  # ← adicione este id
+                    color="success",
+                    style={
+                        'backgroundColor': '#047857', 'border': 'none', 'padding': '10px 20px',
+                        'borderRadius': '8px', 'fontWeight': '600', 'fontSize': '14px'
+                    }
+                )
             ], lg=4, md=5, sm=12, style={'display': 'flex', 'alignItems': 'center', 'justifyContent': 'flex-end'}),
         ], style={'marginTop': '40px', 'marginBottom': '30px'}),
 
@@ -33,7 +38,7 @@ tela_jogadores = html.Div([
                     ]),
                     style={'backgroundColor': '#eff6ff', 'borderBottom': '1px solid #e5e7eb'}
                 ),
-                html.Tbody(id='tabela-jogadores-body'),  # ← preenchido pelo callback
+                html.Tbody(id='tabela-jogadores-body'),
             ], borderless=True, hover=True, style={'marginBottom': '0px', 'width': '100%', 'tableLayout': 'fixed'}),
 
             html.Div([

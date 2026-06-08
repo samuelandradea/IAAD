@@ -11,3 +11,6 @@ mysql-connector-python==8.3.0
 
 # Manipulação, Processamento de Dados e Tabelas
 pandas==3.0.3
+
+# Variáveis de Ambiente
+python-dotenv==1.2.2

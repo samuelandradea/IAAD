@@ -1,6 +1,7 @@
 from dash import html
 import dash_bootstrap_components as dbc
 
+
 tela_jogadores = html.Div([
 
     dbc.Container([
@@ -11,7 +12,7 @@ tela_jogadores = html.Div([
                 html.P("Registry of all competing athletes for the FIFA World Cup 2026 database.", style={'color': '#6b7280', 'fontSize': '14px'})
             ], lg=8, md=7, sm=12),
             dbc.Col([
-                dbc.Button("+ Cadastrar Novo Jogador", color="success",
+                dbc.Button("+ Cadastrar Novo Jogador", color="success",id='btn-ir-cadastro',
                            style={'backgroundColor': '#047857', 'border': 'none', 'padding': '10px 20px',
                                   'borderRadius': '8px', 'fontWeight': '600', 'fontSize': '14px'})
             ], lg=4, md=5, sm=12, style={'display': 'flex', 'alignItems': 'center', 'justifyContent': 'flex-end'}),

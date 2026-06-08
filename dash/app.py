@@ -7,6 +7,14 @@ from jogadores.tela_jogadores import tela_jogadores
 from jogadores.callbacks_jogadores import registrar_callbacks as registrar_callbacks_jogadores
 from jogadores.callbacks_UPDATE_jogadores import registrar_callbacks as registrar_callbacks_editar_jogador
 import dash_bootstrap_components as dbc
+from partidas.layout_partidas import layout_partidas_container
+from partidas.callbacks_partidas import registrar_callbacks as registrar_callbacks_partidas
+
+
+from jogadores.main_jogadores import tela_principal_jogadores
+#dash define que só irá procurar imagens em folders img
+app = dash.Dash(__name__, title="Copa SQL", assets_folder='img', assets_url_path='/img/',external_stylesheets=[dbc.themes.BOOTSTRAP], suppress_callback_exceptions=True)
+
 
 app = dash.Dash(
     __name__, title="Copa SQL",
@@ -95,7 +103,7 @@ def renderizar_pagina(pagina, id_jogador):
         from dash.exceptions import PreventUpdate
         raise PreventUpdate
 
-    if pagina == 'jogadores':  return tela_jogadores
+    if pagina == 'jogadores':  return tela_principal_jogadores
     if pagina == 'dashboards': return html.H1("2")
     if pagina == 'docs':       return html.H1("3")
     if pagina == 'selecoes':   return html.H1("4")

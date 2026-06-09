@@ -3,7 +3,10 @@ import mysql.connector
 import pandas as pd
 from dash import Input, Output, State, ctx, ALL, html, no_update
 import dash_bootstrap_components as dbc
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
 
 SELECOES_POR_PAGINA = 10
 
@@ -12,8 +15,8 @@ def obter_conexao():
     return mysql.connector.connect(
         host="localhost",
         user="root",
-        password="1234",
-        database="Copa do Mundo de Futebol"
+        password=os.getenv("DB_PASSWORD"),
+        database="copa do mundo de futebol"
     )
 
 
@@ -168,7 +171,7 @@ def registrar_callbacks(app):
             cursor.execute("SELECT COALESCE(MAX(id_selecoes), 0) + 1 FROM `Copa do Mundo de Futebol`.`Selecoes`")
             novo_id = cursor.fetchone()[0]
             cursor.execute(
-                "INSERT INTO `Copa do Mundo de Futebol`.`Selecoes` (id_selecoes, nome_selacao, continente, tecnico, titulos) VALUES (%s, %s, %s, %s, %s)",
+                "INSERT INTO `Copa do Mundo de Futebol`.`Selecoes` (id_selecoes, nome_selecao, continente, tecnico, titulos) VALUES (%s, %s, %s, %s, %s)",
                 (novo_id, nome, continente, tecnico, int(titulos))
             )
             conn.commit()

@@ -4,7 +4,10 @@ import pandas as pd
 import dash
 from dash import Input, Output, State, ctx, ALL, html, no_update
 import dash_bootstrap_components as dbc
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
 
 ESTADIOS_POR_PAGINA = 6
 
@@ -12,7 +15,7 @@ def obter_conexao():
     return mysql.connector.connect(
         host="localhost",
         user="root",
-        password="1234",
+        password=os.getenv("DB_PASSWORD"),
         database="Copa do Mundo de Futebol"
     )
 

@@ -1,11 +1,15 @@
-import mysql.connector 
+import mysql.connector
+import os
+from dotenv import load_dotenv
 from dash import Input, Output, State, ctx
+
+load_dotenv()
 
 def get_connection():
     return mysql.connector.connect(
         host="localhost",
         user="root",
-        password="",
+        password=os.getenv("DB_PASSWORD"),
         database="Copa do Mundo de Futebol"
     )
 

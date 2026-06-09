@@ -53,10 +53,19 @@ def inserir_estadio(nome, cidade, pais, capacidade):
 def deletar_estadio(id_estadio):
     conn = obter_conexao()
     cursor = conn.cursor()
+
+    # Deleta partidas que aconteceram nesse estádio
+    cursor.execute(
+        "DELETE FROM `Copa do Mundo de Futebol`.`Partidas` WHERE id_estadio = %s",
+        (int(id_estadio),)
+    )
+
+    # Deleta o estádio
     cursor.execute(
         "DELETE FROM `Copa do Mundo de Futebol`.`Estadios` WHERE id_estadios = %s",
         (int(id_estadio),)
     )
+
     conn.commit()
     cursor.close()
     conn.close()

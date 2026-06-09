@@ -1,6 +1,6 @@
 from dash import html, Input, Output, callback, ctx
 from dash.exceptions import PreventUpdate
-
+import dash_bootstrap_components as dbc
 from jogadores.tela_jogadores import tela_jogadores
 from jogadores.cadastro_jogadores import tela_cadastro_jogadores
 from jogadores.tela_UPDATE_jogadores import build_tela_editar
@@ -8,7 +8,10 @@ from jogadores.tela_UPDATE_jogadores import build_tela_editar
 tela_principal_jogadores = html.Div([
     html.Div(tela_jogadores,          id='view-tabela',  style={'display': 'block'}),
     html.Div(tela_cadastro_jogadores, id='view-cadastro', style={'display': 'none'}),
-    html.Div(id='view-edicao',                           style={'display': 'none'}),
+    #html.Div(id='view-edicao',                           style={'display': 'none'}),
+    html.Div([
+        dbc.Button(id='btn-cancelar-edicao', n_clicks=0, style={'display': 'none'})
+    ], id='view-edicao', style={'display': 'none'}),
 ])
 
 

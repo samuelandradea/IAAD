@@ -49,8 +49,10 @@ app.layout = html.Div([
     dcc.Store(id='estadios-reload-trigger', data=0),
     dcc.Store(id='nav-estadios', data='lista'),
     dcc.Store(id='nav-store', data='home'),
+    dcc.Store(id='selecao-editando-nome', data=None),
     dcc.Store(id='jogador-editando-id', data=None),
     dcc.Store(id='jogadores-pagina-atual', data=1),
+    dcc.Store(id='selecoes-reload-trigger', data=0),
 
     # HEADER
     html.Div([

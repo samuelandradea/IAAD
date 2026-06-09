@@ -145,6 +145,7 @@ footer =  html.Footer(
 
 tela_selecoes = html.Div([
     dbc.Container([
+        dcc.Interval(id='populate-trigger', interval=50, max_intervals=1, n_intervals=0), 
         cabecalho,
         formulario,
     ], style={"maxWidth": "900px"}),

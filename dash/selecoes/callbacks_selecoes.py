@@ -16,7 +16,7 @@ def obter_conexao():
         host="localhost",
         user="root",
         password=os.getenv("DB_PASSWORD"),
-        database="copa do mundo de futebol"
+        database="Copa do Mundo de Futebol"
     )
 
 
@@ -47,6 +47,7 @@ def registrar_callbacks(app):
         State('selecoes-pagina-atual', 'data'),
         prevent_initial_call=True
     )
+
     def atualizar_pagina(_, pagina_atual):
         triggered = ctx.triggered_id
         if triggered is None:
@@ -54,15 +55,72 @@ def registrar_callbacks(app):
         return triggered['index']
 
     @app.callback(
+        Output('selecoes-reload-trigger', 'data'),
+        Input({'type': 'btn-deletar-selecao', 'index': ALL}, 'n_clicks'),
+        State('selecoes-reload-trigger', 'data'),
+        prevent_initial_call=True
+    )
+
+    def deletar_selecao(n_clicks, reload_atual):
+        trigger = ctx.triggered_id
+        if not trigger or not any(n_clicks):
+            return no_update
+        nome = trigger['index']
+        try:
+            conn = obter_conexao()
+            cursor = conn.cursor()
+
+            # Busca o id_selecoes pelo nome
+            cursor.execute(
+                "SELECT id_selecoes FROM `Copa do Mundo de Futebol`.`Selecoes` WHERE nome_selecao = %s",
+                (nome,)
+            )
+            row = cursor.fetchone()
+            if not row:
+                cursor.close()
+                conn.close()
+                return no_update
+
+            id_sel = row[0]
+
+            # Deleta partidas que referenciam essa seleção
+            cursor.execute(
+                "DELETE FROM `Copa do Mundo de Futebol`.`Partidas` WHERE id_selecao_1 = %s OR id_selecao_2 = %s OR vencedor = %s",
+                (id_sel, id_sel, id_sel)
+            )
+
+            # Deleta jogadores da seleção
+            cursor.execute(
+                "DELETE FROM `Copa do Mundo de Futebol`.`Jogadores` WHERE Selecoes_id_selecoes = %s",
+                (id_sel,)
+            )
+
+            # Deleta a seleção
+            cursor.execute(
+                "DELETE FROM `Copa do Mundo de Futebol`.`Selecoes` WHERE id_selecoes = %s",
+                (id_sel,)
+            )
+
+            conn.commit()
+            cursor.close()
+            conn.close()
+        except Exception as e:
+            print(f"Erro ao deletar seleção: {e}")
+            
+    
+
+    @app.callback(
         Output('tabela-selecoes-body',   'children'),
         Output('selecoes-info-texto',    'children'),
         Output('selecoes-botoes-pagina', 'children'),
         Input('selecoes-pagina-atual',   'data'),
         Input('btn-selecoes',            'n_clicks'),
+        Input('selecoes-reload-trigger', 'data'),
     )
-    def renderizar_tabela(pagina_atual, _):
+    def renderizar_tabela(pagina_atual, _, reload):
         selecoes = buscar_selecoes()
         total    = len(selecoes)
+       
 
         if total == 0:
             linha_vazia = html.Tr([
@@ -84,8 +142,10 @@ def registrar_callbacks(app):
                 html.Td(s['confederacao'], style={'fontSize': '13px', 'fontFamily': 'monospace', 'color': '#3c4b3b', 'padding': '14px 24px'}),
                 html.Td(str(s['titulos']), style={'fontSize': '13px', 'fontFamily': 'monospace', 'color': '#131b2e', 'padding': '14px 24px'}),
                 html.Td([
-                    html.Span("✏️", style={'cursor': 'pointer', 'marginRight': '12px', 'fontSize': '16px'}),
-                    html.Span("🗑️", style={'cursor': 'pointer', 'fontSize': '16px'})
+                    html.Button("✏️", id={'type': 'btn-editar-selecao', 'index': s['nome']}, n_clicks=0,
+                                style={'cursor': 'pointer', 'marginRight': '12px', 'fontSize': '16px', 'background': 'none', 'border': 'none'}),
+                    html.Button("🗑️", id={'type': 'btn-deletar-selecao', 'index': s['nome']}, n_clicks=0,
+                                style={'cursor': 'pointer', 'fontSize': '16px', 'background': 'none', 'border': 'none'})
                 ], style={'textAlign': 'center', 'padding': '14px 24px'})
             ], style={'borderBottom': '1px solid #f1f5f9', 'verticalAlign': 'middle',
                       'backgroundColor': '#f1f5f9' if idx % 2 == 1 else 'transparent'})
@@ -149,6 +209,22 @@ def registrar_callbacks(app):
     )
     def cancelar_cadastro(_):
         return 'selecoes'
+
+    # CALLBACK — ao clicar editar em uma seleção, abrir tela de atualização e setar store com o nome
+    @app.callback(
+        Output('nav-store', 'data', allow_duplicate=True),
+        Output('selecao-editando-nome', 'data', allow_duplicate=True),
+        Input({'type': 'btn-editar-selecao', 'index': ALL}, 'n_clicks'),
+        prevent_initial_call=True
+    )
+    def editar_selecao(n_clicks_list):
+        trigger = ctx.triggered_id
+        if not trigger:
+            return no_update, no_update
+        if not ctx.triggered[0]['value']: 
+            return no_update, no_update
+        nome = trigger['index']
+        return 'atualizar-selecoes', nome
 
     # CALLBACK — INSERT nova seleção no banco
     @app.callback(

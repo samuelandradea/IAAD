@@ -1,7 +1,7 @@
 import mysql.connector
 import os
 from dotenv import load_dotenv
-from dash import Input, Output, State, ctx
+from dash import Input, Output, State, ctx, no_update
 
 load_dotenv()
 
@@ -22,30 +22,57 @@ def registrar_callbacks(app):
         Output("input-titles", "value"),
         Input("btn-atualizar", "n_clicks"),
         Input("btn-cancelar", "n_clicks"),
+        Input('populate-trigger', 'n_intervals'),                    
+        State('selecao-editando-nome', 'data'),         
         State("input-team", "value"),
         State("dropdown-continent", "value"),
         State("input-coach", "value"),
         State("input-titles", "value"),
         prevent_initial_call=True
     )
-    def gerenciar_selecao(n_atualizar, n_cancelar, nome, continente, tecnico, titulos):
-        if ctx.triggered_id == "btn-cancelar":
+    def gerenciar_selecao(n_atualizar, n_cancelar, n_populate, selecao_nome, nome, continente, tecnico, titulos):
+        triggered = ctx.triggered_id
+
+        # Quando usuário clica em cancelar
+        if triggered == "btn-cancelar":
             return "", "", None, "", None
 
-        if not all([nome, continente, tecnico, titulos is not None]):
-            return "⚠️ Preencha todos os campos.", nome, continente, tecnico, titulos
+        # Quando usuário seleciona uma seleção para editar (preencher formulário)
+        if triggered == 'populate-trigger':
+            if not selecao_nome:
+                return no_update, no_update, no_update, no_update, no_update
+            try:
+                conn = get_connection()
+                cursor = conn.cursor()
+                cursor.execute("SELECT nome_selecao, continente, tecnico, titulos FROM Selecoes WHERE nome_selecao = %s", (selecao_nome,))
+                row = cursor.fetchone()
+                cursor.close()
+                conn.close()
+                if not row:
+                    return no_update, selecao_nome, None, "", None
+                nome_db, continente_db, tecnico_db, titulos_db = row
+                return "", nome_db, continente_db, tecnico_db, titulos_db
+            except Exception as e:
+                print(f"Erro ao buscar seleção para editar: {e}")
+                return "", no_update, no_update, no_update, no_update
 
-        try:
-            conn = get_connection()
-            cursor = conn.cursor()
-            cursor.execute("""
-                UPDATE Selecoes
-                SET continente = %s, tecnico = %s, titulos = %s
-                WHERE nome_selecao = %s
-            """, (continente, tecnico, titulos, nome))
-            conn.commit()
-            cursor.close()
-            conn.close()
-            return f"✅ Seleção '{nome}' atualizada! Continente: {continente} | Técnico: {tecnico} | Títulos: {titulos}", nome, continente, tecnico, titulos
-        except Exception as e:
-            return f"❌ Erro: {str(e)}", nome, continente, tecnico, titulos
+        # Quando usuário clica em atualizar
+        if triggered == "btn-atualizar":
+            if not all([nome, continente, tecnico, titulos is not None]):
+                return "⚠️ Preencha todos os campos.", nome, continente, tecnico, titulos
+            try:
+                conn = get_connection()
+                cursor = conn.cursor()
+                cursor.execute("""
+                    UPDATE Selecoes
+                    SET continente = %s, tecnico = %s, titulos = %s
+                    WHERE nome_selecao = %s
+                """, (continente, tecnico, titulos, nome))
+                conn.commit()
+                cursor.close()
+                conn.close()
+                return f"✅ Seleção '{nome}' atualizada! Continente: {continente} | Técnico: {tecnico} | Títulos: {titulos}", nome, continente, tecnico, titulos
+            except Exception as e:
+                return f"❌ Erro: {str(e)}", nome, continente, tecnico, titulos
+
+        return no_update, no_update, no_update, no_update, no_update

@@ -1,4 +1,6 @@
 import os
+from dotenv import load_dotenv
+load_dotenv()
 import dash_bootstrap_components as dbc
 from dash import html, Input, Output, State, callback
 import random

@@ -18,8 +18,11 @@ import dash_bootstrap_components as dbc
 from estadios.tela_estadios import tela_estadios
 from estadios.cadastro_estadios import tela_cadastro_estadio
 from estadios.callbacks_estadios import registrar_callbacks as registrar_callbacks_estadios
-from estadios.tela_atualizar_estadios import tela_estadios as tela_atualizar_estadios
+from estadios.tela_atualizar_estadios import build_tela_editar_estadio
 from estadios.callbacks_atualizar_estadios import registrar_callbacks as registrar_callbacks_atualizar_estadios
+from estadios.callbacks_estadios import buscar_estadio_por_id, registrar_callbacks as registrar_callbacks_estadios
+from estadios.tela_atualizar_estadios import build_tela_editar_estadio
+
 
 app = dash.Dash(
     __name__, title="Copa SQL",
@@ -40,7 +43,6 @@ PAGINAS = {
     'atualizar-selecoes': tela_atualizar_selecoes,
     'cadastro-selecao': tela_cadastro_selecao,
     'estadios': tela_estadios,
-    'atualizar-estadios': tela_atualizar_estadios,
     'jogadores': tela_principal_jogadores,
     'partidas': layout_partidas_container,
 }
@@ -55,6 +57,7 @@ app.layout = html.Div([
     dcc.Store(id='jogador-editando-id', data=None),
     dcc.Store(id='jogadores-pagina-atual', data=1),
     dcc.Store(id='selecoes-reload-trigger', data=0),
+    dcc.Store(id='estadio-editando-id', data=None),
 
     # HEADER
     html.Div([
@@ -111,9 +114,10 @@ def atualizar_rota(b1, b2, b3, b4, b5, b6, b7):
     Output('page-content', 'children'),
     Input('nav-store', 'data'),
     Input('nav-estadios', 'data'),
+    Input('estadio-editando-id', 'data'),
     prevent_initial_call=False,
 )
-def renderizar_pagina(pagina, nav_estadios):
+def renderizar_pagina(pagina, nav_estadios, estadio_id):
     if pagina == 'dashboards':
         return html.H1("2")
     if pagina == 'docs':
@@ -121,6 +125,10 @@ def renderizar_pagina(pagina, nav_estadios):
     if pagina == 'estadios':
         if nav_estadios == 'cadastro':
             return tela_cadastro_estadio
+        if nav_estadios == "atualizar":
+            row = buscar_estadio_por_id(estadio_id)
+            return build_tela_editar_estadio(row['id'], row['nome'], row['cidade'],
+                                             row['pais'], row['capacidade'])
         return tela_estadios
     if pagina == 'partidas':
         return layout_partidas_container

@@ -22,8 +22,8 @@ def registrar_callbacks(app):
         Output("input-titles", "value"),
         Output("nav-store", "data", allow_duplicate=True),
         Output("selecoes-reload-trigger", "data", allow_duplicate=True),
-        Input("btn-atualizar", "n_clicks"),
-        Input("btn-cancelar", "n_clicks"),
+        Input("btn-atualizar-selecao", "n_clicks"),
+        Input("btn-cancelar-atualizar-selecao", "n_clicks"),
         Input('populate-trigger', 'n_intervals'),                    
         State('selecao-editando-nome', 'data'),         
         State("input-team", "value"),
@@ -37,7 +37,7 @@ def registrar_callbacks(app):
         triggered = ctx.triggered_id
 
         # Quando usuário clica em cancelar
-        if triggered == "btn-cancelar":
+        if triggered == "btn-cancelar-atualizar-selecao":
             return "", "", None, "", None, "selecoes", no_update
 
         # Quando usuário seleciona uma seleção para editar (preencher formulário)
@@ -60,7 +60,7 @@ def registrar_callbacks(app):
                 return "", no_update, no_update, no_update, no_update, no_update, no_update
 
         # Quando usuário clica em atualizar
-        if triggered == "btn-atualizar":
+        if triggered == "btn-atualizar-selecao":
             if not all([nome, continente, tecnico, titulos is not None]):
                 return "⚠️ Preencha todos os campos.", nome, continente, tecnico, titulos, no_update, no_update
             try:

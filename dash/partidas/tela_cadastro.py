@@ -74,8 +74,15 @@ tela_cadastro = html.Div([
         html.Hr(style={"borderColor": "#eaeaea", "marginTop": "10px", "marginBottom": "20px"}),
 
 
-        html.Div(id="cadastro-feedback", style={"marginBottom": "15px", "color": "#059669", "fontWeight": "bold"}),
-
+        html.Div(id="cadastro-feedback", style={"display": "none"}),
+        
+        dbc.Modal([
+            dbc.ModalHeader(dbc.ModalTitle(id="modal-cadastro-title", style={"fontWeight": "bold"})),
+            dbc.ModalBody(id="modal-cadastro-body"),
+            dbc.ModalFooter(
+                dbc.Button("OK", id="btn-fechar-modal-cadastro", className="ms-auto", n_clicks=0)
+            )
+        ], id="modal-cadastro", is_open=False, centered=True),
 
         html.Div([
             html.Button("Cancelar", id="btn-cancelar-cadastro", style={

@@ -20,7 +20,7 @@ tela_principal_jogadores = html.Div([
     Output('view-cadastro','style'),
     Output('view-edicao',  'style'),
     Input('btn-ir-cadastro',    'n_clicks'),
-    Input('btn-cancelar',       'n_clicks'),
+    Input('btn-cancelar-jogadores',       'n_clicks'),
     Input('btn-cancelar-edicao','n_clicks'),
     Input('jogador-editando-id','data'),
     prevent_initial_call=True
@@ -31,7 +31,7 @@ def alternar_telas(click_cadastro, click_cancelar, click_cancelar_edicao, id_jog
     if botao == 'btn-ir-cadastro':
         return {'display': 'none'}, {'display': 'block'}, {'display': 'none'}
 
-    if botao in ('btn-cancelar', 'btn-cancelar-edicao'):
+    if botao in ('btn-cancelar-jogadores', 'btn-cancelar-edicao'):
         return {'display': 'block'}, {'display': 'none'}, {'display': 'none'}
 
     if botao == 'jogador-editando-id' and id_jogador:

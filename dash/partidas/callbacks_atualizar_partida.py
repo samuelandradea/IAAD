@@ -33,9 +33,9 @@ def registrar_callbacks_atualizar_partida(app):
     # Callback 1: Preencher formulário ao selecionar partida
     @app.callback(
         [Output('data-partida', 'date'),
-         Output('dropdown-estadio', 'value'),
-         Output('dropdown-time1', 'value'),
-         Output('dropdown-time2', 'value'),
+         Output('atualizar-dropdown-estadio', 'value'),
+         Output('atualizar-dropdown-time1', 'value'),
+         Output('atualizar-dropdown-time2', 'value'),
          Output('gols-time1', 'value'),
          Output('gols-time2', 'value')],
         Input('dropdown-partida-selecionada', 'value'),
@@ -61,9 +61,9 @@ def registrar_callbacks_atualizar_partida(app):
         Input('btn-atualizar', 'n_clicks'),
         [State('dropdown-partida-selecionada', 'value'),
          State('data-partida', 'date'),
-         State('dropdown-estadio', 'value'),
-         State('dropdown-time1', 'value'),
-         State('dropdown-time2', 'value'),
+         State('atualizar-dropdown-estadio', 'value'),
+         State('atualizar-dropdown-time1', 'value'),
+         State('atualizar-dropdown-time2', 'value'),
          State('gols-time1', 'value'),
          State('gols-time2', 'value')],
         prevent_initial_call=True

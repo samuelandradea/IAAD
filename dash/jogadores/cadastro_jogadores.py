@@ -145,7 +145,7 @@ tela_cadastro_jogadores = html.Div([
                 
                
                 html.Div([
-                    dbc.Button("Cancelar", id="btn-cancelar", color="link", style={'color': '#4b5563', 'textDecoration': 'none', 'fontWeight': '600'}),
+                    dbc.Button("Cancelar", id="btn-cancelar-jogadores", color="link", style={'color': '#4b5563', 'textDecoration': 'none', 'fontWeight': '600'}),
                     dbc.Button("👤 Cadastrar Jogador", id="btn-cadastrar-jogador", color="success", 
                                style={'backgroundColor': '#00d26a', 'border': 'none', 'fontWeight': 'bold', 'padding': '8px 20px', 'borderRadius': '6px'})
                 ], style={'display': 'flex', 'justifyContent': 'flex-end', 'gap': '15px', 'alignItems': 'center'})

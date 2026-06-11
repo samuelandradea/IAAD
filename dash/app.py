@@ -108,6 +108,20 @@ def atualizar_rota(b1, b2, b3, b4, b5, b6):
 
 
 @app.callback(
+    Output('nav-store', 'data', allow_duplicate=True),
+    Input('hero-btn-selecoes', 'n_clicks'),
+    Input('hero-btn-estadios', 'n_clicks'),
+    prevent_initial_call=True,
+)
+def atualizar_rota_hero(b1, b2):
+    mapa = {
+        'hero-btn-selecoes': 'selecoes',
+        'hero-btn-estadios': 'estadios',
+    }
+    return mapa.get(ctx.triggered_id, 'home')
+
+
+@app.callback(
     Output('page-content', 'children'),
     Input('nav-store', 'data'),
     Input('nav-estadios', 'data'),

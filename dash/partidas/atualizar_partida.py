@@ -81,19 +81,19 @@ tela_atualizar_partida = html.Div([
             
             dbc.Col([
                 html.Label("Estádio", style={'color': '#4b5563', 'fontSize': '13px', 'fontWeight': '500'}),
-                dcc.Dropdown(id='dropdown-estadio', placeholder='Selecione o local', options=buscar_opcoes_estadios())
+                dcc.Dropdown(id='atualizar-dropdown-estadio', placeholder='Selecione o local', options=buscar_opcoes_estadios())
             ], width=6, style={"marginBottom": "20px"}),
         ]),
 
         dbc.Row([
             dbc.Col([
                 html.Label("Time 1 (Mandante)", style={'color': '#4b5563', 'fontSize': '13px', 'fontWeight': '500'}),
-                dcc.Dropdown(id='dropdown-time1', placeholder='Selecione o país', options=buscar_opcoes_selecoes())
+                dcc.Dropdown(id='atualizar-dropdown-time1', placeholder='Selecione o país', options=buscar_opcoes_selecoes())
             ], width=6, style={"marginBottom": "20px"}),
             
             dbc.Col([
                 html.Label("Time 2 (Visitante)", style={'color': '#4b5563', 'fontSize': '13px', 'fontWeight': '500'}),
-                dcc.Dropdown(id='dropdown-time2', placeholder='Selecione o país', options=buscar_opcoes_selecoes())
+                dcc.Dropdown(id='atualizar-dropdown-time2', placeholder='Selecione o país', options=buscar_opcoes_selecoes())
             ], width=6, style={"marginBottom": "20px"}),
         ]),
 

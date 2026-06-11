@@ -89,13 +89,13 @@ formulario = dbc.Card(
                 html.Div([
                     dbc.Button(
                         "Cancelar",
-                        id="btn-cancelar",
+                        id="btn-cancelar-atualizar-selecao",
                         color="link",
                         style={"color": "#333", "fontWeight": "600"}
                     ),
                     dbc.Button(
                         "💾 Atualizar Seleção",
-                        id="btn-atualizar",
+                        id="btn-atualizar-selecao",
                         color="primary",
                         style={"backgroundColor": "#1a3ab8", "border": "none", "fontWeight": "600"}
                     ),

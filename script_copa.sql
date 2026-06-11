@@ -112,12 +112,12 @@ SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 -- =========================
 
 -- =========================
---Esse conjunto gera:
+-- Esse conjunto gera:
 
---10 seleções reais
---50 jogadores reais
---8 estádios oficiais da Copa 2026
---12 partidas para testes
+-- 10 seleções reais
+-- 50 jogadores reais
+-- 8 estádios oficiais da Copa 2026
+-- 12 partidas para testes
 -- =========================
 
 

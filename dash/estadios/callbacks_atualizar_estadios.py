@@ -27,11 +27,15 @@ def registrar_callbacks(app):
         State("input-estadio-cidade", "value"),
         State("dropdown-estadio-pais", "value"),
         State("input-estadio-capacidade", "value"),
+        State("estadio-editando-id", "data"),
         prevent_initial_call=True
     )
-    def gerenciar_estadio(n_cadastrar, n_cancelar, nome, cidade, pais, capacidade):
+    def gerenciar_estadio(n_cadastrar, n_cancelar, nome, cidade, pais, capacidade, id_estadio):
         if ctx.triggered_id == "btn-estadio-cancelar":
             return "", "", "", None, None
+        
+        if not id_estadio:
+            return "Nenhum estádio selecionado para edição"
 
         if not all([nome, cidade, pais, capacidade is not None]):
             return "⚠️ Preencha todos os campos.", nome, cidade, pais, capacidade
@@ -41,9 +45,9 @@ def registrar_callbacks(app):
             cursor = conn.cursor()
             cursor.execute("""
                 UPDATE Estadios
-                SET cidade = %s, pais = %s, capacidade = %s
-                WHERE nome_estadio = %s
-            """, (cidade, pais, capacidade, nome))
+                SET nome_estadio = %s, cidade = %s, pais = %s, capacidade = %s
+                WHERE id_estadios = %s
+            """, (nome, cidade, pais, capacidade, id_estadio))
             conn.commit()
             cursor.close()
             conn.close()

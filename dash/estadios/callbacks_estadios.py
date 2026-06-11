@@ -6,6 +6,7 @@ from dash import Input, Output, State, ctx, ALL, html, no_update
 import dash_bootstrap_components as dbc
 import os
 from dotenv import load_dotenv
+from dash.exceptions import PreventUpdate
 
 load_dotenv()
 
@@ -18,6 +19,16 @@ def obter_conexao():
         password=os.getenv("DB_PASSWORD"),
         database="Copa do Mundo de Futebol"
     )
+
+def buscar_estadio_por_id(id_estadio):
+    conn = obter_conexao()
+    query = """SELECT id_estadios AS id, nome_estadio AS nome,
+                      cidade, pais, capacidade
+               FROM `Copa do Mundo de Futebol`.`Estadios`
+               WHERE id_estadios = %s"""
+    df = pd.read_sql(query, conn, params=(int(id_estadio),))
+    conn.close()
+    return df.to_dict('records')[0]
 
 def buscar_estadios():
     try:
@@ -116,11 +127,12 @@ def registrar_callbacks(app):
                 html.Td(f"{int(e['capacidade']):,}".replace(',', '.'),
                         style={'fontSize': '14px', 'color': '#4b5563', 'padding': '14px 16px'}),
                 html.Td([
-                    html.Button(html.I(className="fa fa-pen"),
-                                disabled=True, title="Editar (outro membro da equipe)",
-                                style={'background': 'none', 'border': 'none',
-                                       'cursor': 'not-allowed', 'color': '#d1d5db',
-                                       'marginRight': '10px', 'fontSize': '14px'}),
+                  html.Button(html.I(className="fa fa-pen"),
+                    id={'type': 'btn-editar-estadio', 'index': e['id']},
+                    n_clicks=0, title="Editar estádio",
+                    style={'background': 'none', 'border': 'none',
+                        'cursor': 'pointer', 'color': '#3b82f6',
+                        'marginRight': '10px', 'fontSize': '14px'}),
                     html.Button(html.I(className="fa fa-trash"),
                                 id={'type': 'btn-delete-estadio', 'index': e['id']},
                                 n_clicks=0, title="Excluir estádio",
@@ -169,6 +181,30 @@ def registrar_callbacks(app):
     )
     def ir_para_cadastro(n):
         return 'cadastro'
+    
+    @app.callback(                                              # <-- cole aqui
+        Output('nav-estadios', 'data', allow_duplicate=True),
+        Input('btn-estadios', 'n_clicks'),
+        prevent_initial_call=True
+    )
+    def voltar_lista_estadios(n):
+        return 'lista'
+    
+    @app.callback(
+        Output('estadio-editando-id', 'data'),
+        Output('nav-estadios', 'data', allow_duplicate=True),
+        Input({'type': 'btn-editar-estadio', 'index': ALL}, 'n_clicks'),
+        prevent_initial_call=True
+    )
+    def abrir_edicao_estadio(n_clicks):
+        triggered = ctx.triggered_id
+        if not triggered:
+            raise PreventUpdate
+        clicado = next((b for b in ctx.inputs_list[0]
+                        if b['id']['index'] == triggered['index']), None)
+        if not clicado or not clicado.get('value'):
+            raise PreventUpdate
+        return triggered['index'], 'atualizar'
 
     @app.callback(
         Output('cadastro-estadio-feedback', 'children'),

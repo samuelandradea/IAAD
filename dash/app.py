@@ -7,6 +7,8 @@ from jogadores.callbacks_jogadores import registrar_callbacks as registrar_callb
 from jogadores.main_jogadores import tela_principal_jogadores
 from partidas.callbacks_partidas import registrar_callbacks as registrar_callbacks_partidas
 from partidas.layout_partidas import layout_partidas_container
+from partidas.atualizar_partida import tela_atualizar_partida
+from partidas.callbacks_atualizar_partida import registrar_callbacks_atualizar_partida
 from selecoes.callbacks_atualizar_selecoes import registrar_callbacks as registrar_callbacks_atualizar_selecoes
 from selecoes.callbacks_selecoes import registrar_callbacks as registrar_callbacks_selecoes
 from selecoes.tela_atualizar_selecoes import tela_selecoes as tela_atualizar_selecoes
@@ -120,6 +122,8 @@ def renderizar_pagina(pagina, nav_estadios):
         if nav_estadios == 'cadastro':
             return tela_cadastro_estadio
         return tela_estadios
+    if pagina == 'partidas':
+        return layout_partidas_container
     return PAGINAS.get(pagina, tela_home)
 
 
@@ -130,6 +134,7 @@ registrar_callbacks_estadios(app)
 registrar_callbacks_editar_jogador(app)
 registrar_callbacks_selecoes(app)
 registrar_callbacks_partidas(app)
+registrar_callbacks_atualizar_partida(app)
 
 if __name__ == '__main__':
     app.run(debug=True)

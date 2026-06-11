@@ -111,81 +111,154 @@ SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 -- POPULAR BANCO
 -- =========================
 
+-- =========================
+--Esse conjunto gera:
+
+--10 seleções reais
+--50 jogadores reais
+--8 estádios oficiais da Copa 2026
+--12 partidas para testes
+-- =========================
+
+
 USE `Copa do Mundo de Futebol`;
 
--- =========================
+-- ==========================
 -- SELEÇÕES
--- =========================
-INSERT INTO Selecoes
-(id_selecoes, nome_selecao, continente, tecnico, titulos)
-VALUES
-(1, 'Brasil', 'America do Sul', 'Dorival Junior', 5),
-(2, 'Franca', 'Europa', 'Didier Deschamps', 2),
-(3, 'Marrocos', 'Africa', 'Walid Regragui', 0),
-(4, 'Japao', 'Asia', 'Hajime Moriyasu', 0),
-(5, 'Estados Unidos', 'America do Norte', 'Mauricio Pochettino', 0),
-(6, 'Australia', 'Oceania', 'Tony Popovic', 0);
+-- ==========================
 
--- =========================
--- JOGADORES
--- =========================
-INSERT INTO Jogadores
-(id_jogador, nome_jogador, posicao, numero_camisa, data_nascimento, Selecoes_id_selecoes)
-VALUES
+INSERT INTO Selecoes VALUES
+(1,'Brasil','América do Sul','Carlo Ancelotti',5),
+(2,'Argentina','América do Sul','Lionel Scaloni',3),
+(3,'França','Europa','Didier Deschamps',2),
+(4,'Espanha','Europa','Luis de la Fuente',1),
+(5,'Alemanha','Europa','Julian Nagelsmann',4),
+(6,'Inglaterra','Europa','Thomas Tuchel',1),
+(7,'Portugal','Europa','Roberto Martínez',0),
+(8,'Marrocos','África','Walid Regragui',0),
+(9,'Japão','Ásia','Hajime Moriyasu',0),
+(10,'Estados Unidos','América do Norte','Mauricio Pochettino',0);
 
--- Brasil
-(1, 'Alisson Becker', 'Goleiro', 1, '1992-10-02', 1),
-(2, 'Marquinhos', 'Zagueiro', 4, '1994-05-14', 1),
-(3, 'Vinicius Junior', 'Atacante', 7, '2000-07-12', 1),
+-- ==========================
+-- JOGADORES - BRASIL
+-- ==========================
 
--- França
-(4, 'Mike Maignan', 'Goleiro', 1, '1995-07-03', 2),
-(5, 'William Saliba', 'Zagueiro', 17, '2001-03-24', 2),
-(6, 'Kylian Mbappe', 'Atacante', 10, '1998-12-20', 2),
+INSERT INTO Jogadores VALUES
+(1,'Alisson Becker','Goleiro',1,'1992-10-02',1),
+(2,'Marquinhos','Zagueiro',4,'1994-05-14',1),
+(3,'Gabriel Magalhães','Zagueiro',3,'1997-12-19',1),
+(4,'Bruno Guimarães','Meio-Campo',8,'1997-11-16',1),
+(5,'Vinicius Junior','Atacante',7,'2000-07-12',1);
 
--- Marrocos
-(7, 'Yassine Bounou', 'Goleiro', 1, '1991-04-05', 3),
-(8, 'Achraf Hakimi', 'Lateral', 2, '1998-11-04', 3),
-(9, 'Hakim Ziyech', 'Meia', 7, '1993-03-19', 3),
+-- ARGENTINA
 
--- Japão
-(10, 'Zion Suzuki', 'Goleiro', 1, '2002-08-21', 4),
-(11, 'Takehiro Tomiyasu', 'Zagueiro', 22, '1998-11-05', 4),
-(12, 'Takefusa Kubo', 'Atacante', 20, '2001-06-04', 4),
+INSERT INTO Jogadores VALUES
+(6,'Emiliano Martinez','Goleiro',23,'1992-09-02',2),
+(7,'Cristian Romero','Zagueiro',13,'1998-04-27',2),
+(8,'Lisandro Martinez','Zagueiro',25,'1998-01-18',2),
+(9,'Enzo Fernandez','Meio-Campo',24,'2001-01-17',2),
+(10,'Julian Alvarez','Atacante',9,'2000-01-31',2);
 
--- Estados Unidos
-(13, 'Matt Turner', 'Goleiro', 1, '1994-06-24', 5),
-(14, 'Christian Pulisic', 'Atacante', 10, '1998-09-18', 5),
-(15, 'Weston McKennie', 'Meia', 8, '1998-08-28', 5),
+-- FRANÇA
 
--- Austrália
-(16, 'Mathew Ryan', 'Goleiro', 1, '1992-04-08', 6),
-(17, 'Harry Souttar', 'Zagueiro', 19, '1998-10-22', 6),
-(18, 'Craig Goodwin', 'Atacante', 23, '1991-12-16', 6);
+INSERT INTO Jogadores VALUES
+(11,'Mike Maignan','Goleiro',1,'1995-07-03',3),
+(12,'William Saliba','Zagueiro',17,'2001-03-24',3),
+(13,'Jules Kounde','Zagueiro',5,'1998-11-12',3),
+(14,'Aurelien Tchouameni','Meio-Campo',8,'2000-01-27',3),
+(15,'Kylian Mbappe','Atacante',10,'1998-12-20',3);
 
--- =========================
--- ESTÁDIOS
--- =========================
-INSERT INTO Estadios
-(id_estadios, nome_estadio, cidade, pais, capacidade)
-VALUES
-(1, 'Lusail Stadium', 'Lusail', 'Catar', 88966),
-(2, 'Al Bayt Stadium', 'Al Khor', 'Catar', 68895),
-(3, '974 Stadium', 'Doha', 'Catar', 44089),
-(4, 'Education City Stadium', 'Al Rayyan', 'Catar', 45350);
+-- ESPANHA
 
--- =========================
--- PARTIDAS
--- =========================
-INSERT INTO Partidas
-(id_partida, data_partida, quantidade_gols_selecao_1,
- quantidade_gols_selecao_2, id_estadio,
- id_selecao_1, id_selecao_2, vencedor)
-VALUES
+INSERT INTO Jogadores VALUES
+(16,'Unai Simon','Goleiro',23,'1997-06-11',4),
+(17,'Robin Le Normand','Zagueiro',3,'1996-11-11',4),
+(18,'Pau Cubarsi','Zagueiro',2,'2007-01-22',4),
+(19,'Pedri','Meio-Campo',20,'2002-11-25',4),
+(20,'Lamine Yamal','Atacante',19,'2007-07-13',4);
 
-(1, '2026-06-15', 3, 1, 1, 1, 4, 1), -- Brasil x Japão
-(2, '2026-06-16', 2, 2, 2, 2, 5, NULL), -- França x EUA
-(3, '2026-06-17', 1, 0, 3, 3, 6, 3), -- Marrocos x Austrália
-(4, '2026-06-18', 2, 3, 4, 1, 2, 2), -- Brasil x França
-(5, '2026-06-19', 0, 1, 1, 4, 5, 5), -- Japão x EUA
-(6, '2026-06-20', 2, 2, 2, 3, 1, NULL); -- Marrocos x Brasil
+-- ALEMANHA
+
+INSERT INTO Jogadores VALUES
+(21,'Marc Andre ter Stegen','Goleiro',1,'1992-04-30',5),
+(22,'Antonio Rudiger','Zagueiro',2,'1993-03-03',5),
+(23,'Jonathan Tah','Zagueiro',4,'1996-02-11',5),
+(24,'Jamal Musiala','Meio-Campo',10,'2003-02-26',5),
+(25,'Kai Havertz','Atacante',7,'1999-06-11',5);
+
+-- INGLATERRA
+
+INSERT INTO Jogadores VALUES
+(26,'Jordan Pickford','Goleiro',1,'1994-03-07',6),
+(27,'John Stones','Zagueiro',5,'1994-05-28',6),
+(28,'Marc Guehi','Zagueiro',6,'2000-07-13',6),
+(29,'Jude Bellingham','Meio-Campo',10,'2003-06-29',6),
+(30,'Harry Kane','Atacante',9,'1993-07-28',6);
+
+-- PORTUGAL
+
+INSERT INTO Jogadores VALUES
+(31,'Diogo Costa','Goleiro',1,'1999-09-19',7),
+(32,'Ruben Dias','Zagueiro',3,'1997-05-14',7),
+(33,'Pepe','Zagueiro',4,'1983-02-26',7),
+(34,'Bruno Fernandes','Meio-Campo',8,'1994-09-08',7),
+(35,'Cristiano Ronaldo','Atacante',7,'1985-02-05',7);
+
+-- MARROCOS
+
+INSERT INTO Jogadores VALUES
+(36,'Yassine Bounou','Goleiro',1,'1991-04-05',8),
+(37,'Achraf Hakimi','Lateral',2,'1998-11-04',8),
+(38,'Nayef Aguerd','Zagueiro',5,'1996-03-30',8),
+(39,'Sofyan Amrabat','Meio-Campo',4,'1996-08-21',8),
+(40,'Hakim Ziyech','Atacante',7,'1993-03-19',8);
+
+-- JAPÃO
+
+INSERT INTO Jogadores VALUES
+(41,'Zion Suzuki','Goleiro',1,'2002-08-21',9),
+(42,'Takehiro Tomiyasu','Zagueiro',22,'1998-11-05',9),
+(43,'Ko Itakura','Zagueiro',4,'1997-01-27',9),
+(44,'Wataru Endo','Meio-Campo',6,'1993-02-09',9),
+(45,'Takefusa Kubo','Atacante',20,'2001-06-04',9);
+
+-- EUA
+
+INSERT INTO Jogadores VALUES
+(46,'Matt Turner','Goleiro',1,'1994-06-24',10),
+(47,'Chris Richards','Zagueiro',3,'2000-03-28',10),
+(48,'Tim Ream','Zagueiro',13,'1987-10-05',10),
+(49,'Weston McKennie','Meio-Campo',8,'1998-08-28',10),
+(50,'Christian Pulisic','Atacante',10,'1998-09-18',10);
+
+-- ==========================
+-- ESTÁDIOS OFICIAIS 2026
+-- ==========================
+
+INSERT INTO Estadios VALUES
+(1,'MetLife Stadium','New Jersey','Estados Unidos',82500),
+(2,'SoFi Stadium','Los Angeles','Estados Unidos',70240),
+(3,'AT&T Stadium','Dallas','Estados Unidos',80000),
+(4,'Mercedes-Benz Stadium','Atlanta','Estados Unidos',71000),
+(5,'Estadio Azteca','Cidade do México','México',87523),
+(6,'BMO Field','Toronto','Canadá',30000),
+(7,'BC Place','Vancouver','Canadá',54500),
+(8,'NRG Stadium','Houston','Estados Unidos',72220);
+
+-- ==========================
+-- PARTIDAS DE TESTE
+-- ==========================
+
+INSERT INTO Partidas VALUES
+(1,'2026-06-12',2,1,1,1,9,1),
+(2,'2026-06-13',3,2,2,2,10,2),
+(3,'2026-06-14',1,1,3,3,6,NULL),
+(4,'2026-06-15',2,0,4,4,8,4),
+(5,'2026-06-16',1,0,5,5,7,5),
+(6,'2026-06-17',2,2,6,1,2,NULL),
+(7,'2026-06-18',3,1,7,3,9,3),
+(8,'2026-06-19',2,1,8,6,10,6),
+(9,'2026-06-20',1,0,1,7,8,7),
+(10,'2026-06-21',2,2,2,4,5,NULL),
+(11,'2026-06-22',3,1,3,1,10,1),
+(12,'2026-06-23',2,0,4,2,9,2);

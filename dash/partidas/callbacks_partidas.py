@@ -1,6 +1,6 @@
 import mysql.connector
 import pandas as pd
-from dash import Input, Output, State, ctx, html
+from dash import Input, Output, State, ctx, html, ALL, no_update
 import os
 from dotenv import load_dotenv
 
@@ -35,7 +35,6 @@ def buscar_partidas():
         """
         df = pd.read_sql(query, conn)
         
-
         cursor = conn.cursor()
         cursor.execute("SELECT COUNT(DISTINCT id_estadio) FROM Partidas;")
         estadios_ativos = cursor.fetchone()[0]
@@ -43,128 +42,66 @@ def buscar_partidas():
         cursor.execute("SELECT COUNT(*) FROM Selecoes;")
         times_inscritos = cursor.fetchone()[0]
         
+        cursor.execute("""
+            SELECT CONCAT(s1.nome_selecao, ' x ', s2.nome_selecao) 
+            FROM Partidas p
+            JOIN Selecoes s1 ON p.id_selecao_1 = s1.id_selecoes
+            JOIN Selecoes s2 ON p.id_selecao_2 = s2.id_selecoes
+            ORDER BY p.data_partida ASC LIMIT 1;
+        """)
+        resultado_abertura = cursor.fetchone()
+        partida_abertura = resultado_abertura[0] if resultado_abertura else "Não definida"
+
         conn.close()
-        return df.to_dict('records'), estadios_ativos, times_inscritos
+
+        total_partidas = len(df)
+
+        linhas = []
+        for row in df.itertuples():
+            linhas.append(
+                html.Tr([
+                    html.Td(str(row.id), style={"padding": "15px", "color": "#111827", "fontWeight": "500", "borderBottom": "1px solid #eaeaea"}),
+                    html.Td(pd.to_datetime(row.data).strftime('%d/%m/%Y'), style={"padding": "15px", "color": "#4b5563", "borderBottom": "1px solid #eaeaea"}),
+                    html.Td(row.estadio, style={"padding": "15px", "color": "#4b5563", "borderBottom": "1px solid #eaeaea"}),
+                    html.Td(row.time1, style={"padding": "15px", "color": "#111827", "fontWeight": "500", "borderBottom": "1px solid #eaeaea"}),
+                    html.Td(row.time2, style={"padding": "15px", "color": "#111827", "fontWeight": "500", "borderBottom": "1px solid #eaeaea"}),
+                    html.Td(f"{row.gols1} - {row.gols2}", style={"padding": "15px", "textAlign": "center", "color": "#111827", "fontWeight": "bold", "borderBottom": "1px solid #eaeaea"}),
+                    html.Td([
+                        # Botão Editar (Lápis)
+                        html.Button("✏️", id={'type': 'btn-editar-partida', 'index': row.id}, style={
+                            "background": "none", "border": "none", "cursor": "pointer", "marginRight": "10px", "fontSize": "16px"
+                        }),
+                        # Botão Deletar (Lixeira)
+                        html.Button("🗑️", id={'type': 'btn-deletar-partida', 'index': row.id}, style={
+                            "background": "none", "border": "none", "cursor": "pointer", "fontSize": "16px"
+                        })
+                    ], style={"padding": "15px", "textAlign": "right", "borderBottom": "1px solid #eaeaea"}),
+                ])
+            )
+
+        return linhas, str(total_partidas), str(estadios_ativos), str(times_inscritos), partida_abertura
     except Exception as e:
         print(f"Erro ao buscar partidas: {e}")
-        return [], 0, 0
+        return [], "0", "0", "0", "Erro"
 
 def registrar_callbacks(app):
-    
-
-    @app.callback(
-        [Output('container-lista-partidas', 'style'),
-         Output('container-cadastro-partida', 'style'),
-         Output('cadastro-feedback', 'children')],
-        [Input('btn-cadastrar-partida', 'n_clicks'),
-         Input('btn-cancelar-cadastro', 'n_clicks'),
-         Input('btn-salvar-partida', 'n_clicks')],
-        [State('input-data-partida', 'value'),
-         State('dropdown-estadio', 'value'),
-         State('dropdown-time1', 'value'),
-         State('dropdown-time2', 'value'),
-         State('input-gols-time1', 'value'),
-         State('input-gols-time2', 'value')],
-        prevent_initial_call=True
-    )
-    def alternar_e_salvar(btn_cad, btn_canc, btn_salvar, data, estadio, t1, t2, g1, g2):
-        botao_clicado = ctx.triggered_id
-        
-
-        if botao_clicado == 'btn-cadastrar-partida':
-            return {'display': 'none'}, {'display': 'block'}, ""
-            
-
-        elif botao_clicado == 'btn-cancelar-cadastro':
-            return {'display': 'block'}, {'display': 'none'}, ""
-            
-
-        elif botao_clicado == 'btn-salvar-partida':
-
-            if not all([data, estadio, t1, t2, g1 is not None, g2 is not None]):
-                return {'display': 'none'}, {'display': 'block'}, "Por favor, preencha todos os campos."
-            
-            try:
-                conn = obter_conexao()
-                cursor = conn.cursor()
-                
-
-                cursor.execute("SELECT COALESCE(MAX(id_partida), 0) + 1 FROM Partidas")
-                novo_id = cursor.fetchone()[0]
-                
-
-                vencedor = None
-                if int(g1) > int(g2):
-                    vencedor = int(t1)
-                elif int(g2) > int(g1):
-                    vencedor = int(t2)
-                    
-                sql = """
-                    INSERT INTO Partidas 
-                    (id_partida, data_partida, quantidade_gols_selecao_1, quantidade_gols_selecao_2, id_estadio, id_selecao_1, id_selecao_2, vencedor)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-                """
-                valores = (novo_id, data, g1, g2, estadio, t1, t2, vencedor)
-                cursor.execute(sql, valores)
-                conn.commit()
-                conn.close()
-                
-
-                return {'display': 'block'}, {'display': 'none'}, ""
-            except Exception as e:
-                print(f"Erro ao salvar: {e}")
-                return {'display': 'none'}, {'display': 'block'}, f"Erro no banco: {str(e)}"
-                
-        return {'display': 'block'}, {'display': 'none'}, ""
-
-
-
+    # Callback de renderização da tabela principal
     @app.callback(
         Output('tabela-partidas-body', 'children'),
         Output('kpi-total-partidas', 'children'),
         Output('kpi-estadios-ativos', 'children'),
         Output('kpi-times-inscritos', 'children'),
         Output('kpi-partida-abertura', 'children'),
-        Input('btn-partidas', 'n_clicks'),
-        Input('btn-salvar-partida', 'n_clicks') # Recarrega ao salvar
+        Input('nav-store', 'data'),
+        Input('btn-salvar-partida', 'n_clicks'),
+        Input('btn-atualizar', 'n_clicks'),
+        Input('excluir-trigger-store', 'data'), 
+        prevent_initial_call=False
     )
-    def renderizar_tabela(btn_partidas, btn_salvar):
-        partidas, estadios_ativos, times_inscritos = buscar_partidas()
-        total_partidas = len(partidas)
-        
-        partida_abertura = "-"
-        
-        if total_partidas == 0:
-            linha_vazia = html.Tr([
-                html.Td("Nenhuma partida encontrada.", colSpan=6,
-                        style={'textAlign': 'center', 'color': '#6b7280', 'padding': '30px'})
-            ])
-            return [linha_vazia], "0", "0", str(times_inscritos), "-"
-            
+    def carregar_dados_tela_principal(pagina, n_salvar, n_atualizar, trigger_excluir):
+        return buscar_partidas()
 
-        primeira = partidas[0]
-        partida_abertura = f"{primeira['estadio']}, {primeira['time1']} x {primeira['time2']}"
-
-
-        linhas = []
-        for p in partidas:
-            placar = f"{p['gols1']} - {p['gols2']}"
-            linhas.append(
-                html.Tr([
-                    html.Td(f"#{p['id']:02d}", style={"padding": "15px", "color": "#059669", "fontWeight": "bold", "borderBottom": "1px solid #eaeaea"}),
-                    html.Td(p['estadio'], style={"padding": "15px", "color": "#111827", "fontWeight": "bold", "borderBottom": "1px solid #eaeaea"}),
-                    html.Td(p['time1'], style={"padding": "15px", "color": "#4b5563", "borderBottom": "1px solid #eaeaea"}),
-                    html.Td(p['time2'], style={"padding": "15px", "color": "#4b5563", "borderBottom": "1px solid #eaeaea"}),
-                    html.Td(placar, style={"padding": "15px", "textAlign": "center", "color": "#111827", "fontWeight": "bold", "borderBottom": "1px solid #eaeaea"}),
-                    html.Td([
-                        html.Span("✏️", style={"cursor": "pointer", "marginRight": "10px", "color": "#6b7280"}),
-                        html.Span("🗑️", style={"cursor": "pointer", "color": "#ef4444"})
-                    ], style={"padding": "15px", "textAlign": "right", "borderBottom": "1px solid #eaeaea"}),
-                ])
-            )
-
-        return linhas, str(total_partidas), str(estadios_ativos), str(times_inscritos), partida_abertura
-
+    # Dropdowns do cadastro
     @app.callback(
         Output('dropdown-estadio', 'options'),
         Output('dropdown-time1', 'options'),
@@ -176,15 +113,65 @@ def registrar_callbacks(app):
         try:
             conn = obter_conexao()
             cursor = conn.cursor()
-            
             cursor.execute("SELECT id_estadios, nome_estadio FROM Estadios")
             estadios = [{"label": row[1], "value": row[0]} for row in cursor.fetchall()]
-            
             cursor.execute("SELECT id_selecoes, nome_selecao FROM Selecoes")
             selecoes = [{"label": row[1], "value": row[0]} for row in cursor.fetchall()]
-            
             conn.close()
             return estadios, selecoes, selecoes
-        except Exception as e:
-            print(f"Erro ao carregar opções: {e}")
+        except:
             return [], [], []
+
+    # Ir para tela de edição (Lápis)
+    @app.callback(
+        Output('dropdown-partida-selecionada', 'value'),
+        Input({'type': 'btn-editar-partida', 'index': ALL}, 'n_clicks'),
+        prevent_initial_call=True
+    )
+    def ir_para_edicao_partida(botoes_clicks):
+        triggered = ctx.triggered_id
+        if triggered is None or not any(x for x in botoes_clicks if x is not None):
+            return no_update
+        
+        id_partida = triggered['index']
+        return id_partida
+
+    # ETAPA 1 DA EXCLUSÃO: Quando clica no lixo, abre a janela e guarda o ID que foi clicado no Store
+    @app.callback(
+        Output('confirmacao-exclusao-partida', 'displayed'),
+        Output('confirmacao-exclusao-partida', 'message'),
+        Output('id-partida-para-excluir-store', 'data'),
+        Input({'type': 'btn-deletar-partida', 'index': ALL}, 'n_clicks'),
+        prevent_initial_call=True
+    )
+    def disparar_confirmacao(clicks):
+        triggered = ctx.triggered_id
+        if triggered is None or not any(x for x in clicks if x is not None):
+            return False, no_update, no_update
+            
+        id_partida = triggered['index']
+        mensagem = f"Deseja realmente deletar permanentemente a partida de ID {id_partida}?"
+        return True, mensagem, id_partida
+
+    # ETAPA 2 DA EXCLUSÃO: Se o usuário confirmar no botão "OK", efetua o DELETE usando o ID salvo
+    @app.callback(
+        Output('excluir-trigger-store', 'data'),
+        Input('confirmacao-exclusao-partida', 'submit_n_clicks'),
+        State('id-partida-para-excluir-store', 'data'),
+        State('excluir-trigger-store', 'data'),
+        prevent_initial_call=True
+    )
+    def deletar_partida_confirmada(submit_clicks, id_partida_para_deletar, valor_atual):
+        if not submit_clicks or id_partida_para_deletar is None:
+            return no_update
+        
+        try:
+            conn = obter_conexao()
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM Partidas WHERE id_partida = %s", (id_partida_para_deletar,))
+            conn.commit()
+            conn.close()
+            return valor_atual + 1
+        except Exception as e:
+            print(f"Erro ao deletar partida: {e}")
+            return no_update

@@ -68,8 +68,6 @@ app.layout = html.Div([
 
         html.Div([
             html.Button('Home',          id='btn-home',       n_clicks=0, style=estilo_botao_ativo),
-            html.Button('Dashboards',    id='btn-dashboards', n_clicks=0, style=estilo_botao_padrao),
-            html.Button('Documentation', id='btn-docs',       n_clicks=0, style=estilo_botao_padrao),
             html.Button('Seleções',      id='btn-selecoes',   n_clicks=0, style=estilo_botao_padrao),
             html.Button('Estádios',      id='btn-estadios',   n_clicks=0, style=estilo_botao_padrao),
             html.Button('Jogadores',     id='btn-jogadores',  n_clicks=0, style=estilo_botao_padrao),
@@ -89,23 +87,33 @@ app.layout = html.Div([
 @app.callback(
     Output('nav-store', 'data'),
     Input('btn-home', 'n_clicks'),
-    Input('btn-dashboards', 'n_clicks'),
-    Input('btn-docs', 'n_clicks'),
     Input('btn-selecoes', 'n_clicks'),
     Input('btn-estadios', 'n_clicks'),
     Input('btn-jogadores', 'n_clicks'),
     Input('btn-partidas', 'n_clicks'),
     prevent_initial_call=True,
 )
-def atualizar_rota(b1, b2, b3, b4, b5, b6, b7):
+def atualizar_rota(b1, b2, b3, b4, b5):
     mapa = {
         'btn-home': 'home',
-        'btn-dashboards': 'dashboards',
-        'btn-docs': 'docs',
         'btn-selecoes': 'selecoes',
         'btn-estadios': 'estadios',
         'btn-jogadores': 'jogadores',
         'btn-partidas': 'partidas',
+    }
+    return mapa.get(ctx.triggered_id, 'home')
+
+
+@app.callback(
+    Output('nav-store', 'data', allow_duplicate=True),
+    Input('hero-btn-selecoes', 'n_clicks'),
+    Input('hero-btn-estadios', 'n_clicks'),
+    prevent_initial_call=True,
+)
+def atualizar_rota_hero(b1, b2):
+    mapa = {
+        'hero-btn-selecoes': 'selecoes',
+        'hero-btn-estadios': 'estadios',
     }
     return mapa.get(ctx.triggered_id, 'home')
 
@@ -118,8 +126,6 @@ def atualizar_rota(b1, b2, b3, b4, b5, b6, b7):
     prevent_initial_call=False,
 )
 def renderizar_pagina(pagina, nav_estadios, estadio_id):
-    if pagina == 'dashboards':
-        return html.H1("2")
     if pagina == 'docs':
         return html.H1("3")
     if pagina == 'estadios':

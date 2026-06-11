@@ -10,7 +10,8 @@ estilo_input = {
     'backgroundColor': '#f2f3ff', 'border': '1px solid #bacbb7',
     'borderRadius': '8px', 'padding': '14px 17px', 'fontSize': '15px',
     'width': '100%', 'color': '#131b2e', 'outline': 'none',
-    'fontFamily': 'Inter, sans-serif', 'boxSizing': 'border-box'
+    'fontFamily': 'Inter, sans-serif', 'boxSizing': 'border-box',
+    'overflow': 'visible'
 }
 
 tela_cadastro_selecao = html.Div([
@@ -52,41 +53,41 @@ tela_cadastro_selecao = html.Div([
             html.Div([
                 html.Div([
                     html.Label("Team Name", style=estilo_label),
-                    dcc.Input(
+                    dbc.Input(
                         id='input-nome-selecao', type='text',
                         placeholder='Ex: Brasil, France, etc.',
                         style=estilo_input
                     ),
-                ], style={'width': '50%', 'paddingRight': '12px', 'boxSizing': 'border-box'}),
+                ], style={'flex': '1', 'paddingRight': '12px', 'minWidth': '0'}),
 
                 html.Div([
                     html.Label("Continent", style=estilo_label),
                     dcc.Dropdown(
                         id='input-continente-selecao',
                         options=[
-                            {'label': 'CONMEBOL', 'value': 'CONMEBOL'},
-                            {'label': 'UEFA',     'value': 'UEFA'},
-                            {'label': 'AFC',      'value': 'AFC'},
-                            {'label': 'CONCACAF', 'value': 'CONCACAF'},
-                            {'label': 'CAF',      'value': 'CAF'},
-                            {'label': 'OFC',      'value': 'OFC'},
+                            {'label': 'África',        'value': 'África'},
+                            {'label': 'América do Norte', 'value': 'América do Norte'},
+                            {'label': 'América do Sul', 'value': 'América do Sul'},
+                            {'label': 'Ásia',          'value': 'Ásia'},
+                            {'label': 'Europa',        'value': 'Europa'},
+                            {'label': 'Oceania',       'value': 'Oceania'},
                         ],
                         placeholder='Select a continent',
                         style={'fontSize': '15px'}
                     ),
-                ], style={'width': '50%', 'paddingLeft': '12px', 'boxSizing': 'border-box'}),
+                ], style={'flex': '1', 'paddingLeft': '12px', 'minWidth': '0'}),
             ], style={'display': 'flex', 'marginBottom': '24px'}),
 
             # Linha 2: Coach + Number of Titles
             html.Div([
                 html.Div([
                     html.Label("Coach", style=estilo_label),
-                    dcc.Input(
+                    dbc.Input(
                         id='input-tecnico-selecao', type='text',
                         placeholder='Nome do Treinador',
                         style=estilo_input
                     ),
-                ], style={'width': '50%', 'paddingRight': '12px', 'boxSizing': 'border-box'}),
+                ], style={'flex': '1', 'paddingRight': '12px', 'minWidth': '0'}),
 
                 html.Div([
                     html.Label("Number of Titles", style=estilo_label),
@@ -96,21 +97,21 @@ tela_cadastro_selecao = html.Div([
                             'display': 'flex', 'alignItems': 'center',
                             'borderRight': '1px solid #bacbb7',
                         }),
-                        dcc.Input(
+                        dbc.Input(
                             id='input-titulos-selecao', type='number',
                             placeholder='0', min=0, value=0,
                             style={
                                 'backgroundColor': 'transparent', 'border': 'none',
                                 'fontSize': '15px', 'width': '100%', 'outline': 'none',
-                                'padding': '14px', 'color': '#131b2e'
+                                'padding': '14px', 'color': '#131b2e', 'boxShadow': 'none'
                             }
                         ),
                     ], style={
                         'display': 'flex', 'alignItems': 'center',
                         'backgroundColor': '#f2f3ff', 'border': '1px solid #bacbb7',
-                        'borderRadius': '8px', 'height': '52px', 'overflow': 'hidden'
+                        'borderRadius': '8px', 'height': '52px'
                     }),
-                ], style={'width': '50%', 'paddingLeft': '12px', 'boxSizing': 'border-box'}),
+                ], style={'flex': '1', 'paddingLeft': '12px', 'minWidth': '0'}),
             ], style={'display': 'flex', 'marginBottom': '0px'}),
 
             # Divisor + botões

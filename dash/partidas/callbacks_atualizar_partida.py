@@ -30,7 +30,18 @@ def buscar_opcoes_partidas():
         return []
 
 def registrar_callbacks_atualizar_partida(app):
-    # Callback 1: Preencher formulário ao selecionar partida
+    
+    # Callback 1: Atualiza as opções do dropdown de seleção de partida
+    @app.callback(
+        Output('dropdown-partida-selecionada', 'options', allow_duplicate=True),
+        Input('partida-salva-sucesso', 'data'),
+        Input('excluir-trigger-store', 'data'),
+        prevent_initial_call=True
+    )
+    def atualizar_opcoes_partida_selecionada(sucesso_cadastro, trigger_excluir):
+        return buscar_opcoes_partidas()
+    
+    # Callback 2: Preencher formulário ao selecionar partida
     @app.callback(
         [Output('data-partida', 'date'),
          Output('atualizar-dropdown-estadio', 'value'),
@@ -54,7 +65,7 @@ def registrar_callbacks_atualizar_partida(app):
             return str(dados[0]), dados[1], dados[2], dados[3], dados[4], dados[5]
         return None, None, None, None, 0, 0
 
-    # Callback 2: Executar o UPDATE
+    # Callback 3: Executar o UPDATE
     @app.callback(
         [Output('notificacao-banco', 'children'),
          Output('dropdown-partida-selecionada', 'options')],
@@ -97,7 +108,7 @@ def registrar_callbacks_atualizar_partida(app):
         except mysql.connector.Error as err:
             return dbc.Alert(f"❌ Erro MySQL: {err.msg}", color="danger"), buscar_opcoes_partidas()
 
-    # Callback 3: Renderizar Tabela do Histórico
+    # Callback 4: Renderizar Tabela do Histórico
     @app.callback(
         Output('tabela-historico-partidas', 'children'),
         Input('notificacao-banco', 'children')

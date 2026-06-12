@@ -1,4 +1,4 @@
-from dash import html, dcc, Input, Output, ctx
+from dash import html, dcc, Input, Output, State, ctx
 import dash
 from partidas.tela_partidas import tela_partidas
 from partidas.tela_cadastro import tela_cadastro
@@ -16,6 +16,9 @@ layout_partidas_container = html.Div([
         id='confirmacao-exclusao-partida',
         message='Tem certeza que deseja deletar permanentemente esta partida?',
     ),
+    
+    # Confirma que foi salvo
+    dcc.Store(id='partida-salva-sucesso', data=False),
 
     html.Div(id='container-lista-partidas', children=tela_partidas, style={'display': 'block'}),
     html.Div(id='container-cadastro-partida', children=tela_cadastro, style={'display': 'none'}),
@@ -50,3 +53,11 @@ def navegar_entre_telas_partidas(n_cad, n_can, n_vol, n_edit):
             return {'display': 'none'}, {'display': 'none'}, {'display': 'block'}
         
     return {'display': 'block'}, {'display': 'none'}, {'display': 'none'}
+
+@dash.callback(
+    Output('modal-cadastro', 'is_open', allow_duplicate=True),
+    Input('btn-fechar-modal-cadastro', 'n_clicks'),
+    prevent_initial_call=True
+)
+def fechar_modal_cadastro(n):
+    return False

@@ -1,6 +1,6 @@
 import mysql.connector
 import pandas as pd
-from dash import Input, Output, State, ctx, html, dcc, ALL, no_update
+from dash import Input, Output, State, ctx, html, ALL, no_update
 import os
 from dotenv import load_dotenv
 
@@ -85,7 +85,7 @@ def buscar_partidas():
         return [], "0", "0", "0", "Erro"
 
 def registrar_callbacks(app):
-    # Callback de renderização da tabela principal
+    # Callback principal da tabela
     @app.callback(
         Output('tabela-partidas-body', 'children'),
         Output('kpi-total-partidas', 'children'),
@@ -93,12 +93,13 @@ def registrar_callbacks(app):
         Output('kpi-times-inscritos', 'children'),
         Output('kpi-partida-abertura', 'children'),
         Input('nav-store', 'data'),
-        Input('cadastro-feedback', 'children'),
-        Input('btn-atualizar', 'n_clicks'),
+        Input('btn-salvar-partida', 'n_clicks'),
+        Input('btn-atualizar', 'n_clicks'),  # <-- ESCUTA O CLIQUE DE ATUALIZAR DA OUTRA TELA!
         Input('excluir-trigger-store', 'data'), 
         prevent_initial_call=False
     )
     def carregar_dados_tela_principal(pagina, n_salvar, n_atualizar, trigger_excluir):
+        # Sempre que houver qualquer uma das ações acima, ele busca os dados fresquinhos do MySQL
         return buscar_partidas()
 
     # Dropdowns do cadastro
@@ -106,7 +107,8 @@ def registrar_callbacks(app):
         Output('dropdown-estadio', 'options'),
         Output('dropdown-time1', 'options'),
         Output('dropdown-time2', 'options'),
-        Input('btn-cadastrar-partida', 'n_clicks')
+        Input('btn-cadastrar-partida', 'n_clicks'),
+        prevent_initial_call=True
     )
     def carregar_opcoes_dropdown(_):
         try:
@@ -118,8 +120,7 @@ def registrar_callbacks(app):
             selecoes = [{"label": row[1], "value": row[0]} for row in cursor.fetchall()]
             conn.close()
             return estadios, selecoes, selecoes
-        except Exception as e:
-            print(f"Erro ao carregar dropdowns: {e}")
+        except:
             return [], [], []
 
     # Ir para tela de edição (Lápis)
@@ -136,7 +137,7 @@ def registrar_callbacks(app):
         id_partida = triggered['index']
         return id_partida
 
-    # ETAPA 1 DA EXCLUSÃO: Quando clica no lixo, abre a janela e guarda o ID que foi clicado no Store
+    # ETAPA 1 DA EXCLUSÃO: Quando clica no lixo
     @app.callback(
         Output('confirmacao-exclusao-partida', 'displayed'),
         Output('confirmacao-exclusao-partida', 'message'),
@@ -151,9 +152,9 @@ def registrar_callbacks(app):
             
         id_partida = triggered['index']
         mensagem = f"Deseja realmente deletar permanentemente a partida de ID {id_partida}?"
-        return True, mensagem, id_partida
+        return True, message, id_partida
 
-    # ETAPA 2 DA EXCLUSÃO: Se o usuário confirmar no botão "OK", efetua o DELETE usando o ID salvo
+    # ETAPA 2 DA EXCLUSÃO: Confirmação do "OK"
     @app.callback(
         Output('excluir-trigger-store', 'data'),
         Input('confirmacao-exclusao-partida', 'submit_n_clicks'),
@@ -175,70 +176,3 @@ def registrar_callbacks(app):
         except Exception as e:
             print(f"Erro ao deletar partida: {e}")
             return no_update
-
-    # Callback para SALVAR nova partida e LIMPAR os campos (também limpa ao Cancelar) e controlar o Modal
-    @app.callback(
-        Output('modal-cadastro', 'is_open'),
-        Output('modal-cadastro-title', 'children'),
-        Output('modal-cadastro-title', 'style'),
-        Output('modal-cadastro-body', 'children'),
-        Output('cadastro-feedback', 'children'),
-        Output('input-data-partida', 'value'),
-        Output('dropdown-estadio', 'value'),
-        Output('dropdown-time1', 'value'),
-        Output('dropdown-time2', 'value'),
-        Output('input-gols-time1', 'value'),
-        Output('input-gols-time2', 'value'),
-        Input('btn-salvar-partida', 'n_clicks'),
-        Input('btn-cancelar-cadastro', 'n_clicks'),
-        Input('btn-fechar-modal-cadastro', 'n_clicks'),
-        State('input-data-partida', 'value'),
-        State('dropdown-estadio', 'value'),
-        State('dropdown-time1', 'value'),
-        State('dropdown-time2', 'value'),
-        State('input-gols-time1', 'value'),
-        State('input-gols-time2', 'value'),
-        prevent_initial_call=True
-    )
-    def salvar_nova_partida(n_salvar, n_cancelar, n_fechar, data, id_estadio, id_time1, id_time2, gols1, gols2):
-        triggered = ctx.triggered_id
-        
-        if triggered == 'btn-fechar-modal-cadastro':
-            return False, no_update, no_update, no_update, no_update, no_update, no_update, no_update, no_update, no_update, no_update
-        
-        if triggered == 'btn-cancelar-cadastro':
-            return False, no_update, no_update, no_update, no_update, "", None, None, None, 0, 0
-            
-        if triggered == 'btn-salvar-partida':
-            if not data or not id_estadio or not id_time1 or not id_time2:
-                return True, "⚠️ Atenção", {"color": "#d97706"}, "Preencha todos os campos obrigatórios.", no_update, no_update, no_update, no_update, no_update, no_update, no_update
-                
-            if id_time1 == id_time2:
-                return True, "❌ Erro", {"color": "#dc2626"}, "O Time 1 não pode jogar contra si mesmo.", no_update, no_update, no_update, no_update, no_update, no_update, no_update
-                
-            try:
-                conn = obter_conexao()
-                cursor = conn.cursor()
-                
-                if gols1 is None: gols1 = 0
-                if gols2 is None: gols2 = 0
-                
-                if int(gols1) > int(gols2): vencedor = id_time1
-                elif int(gols2) > int(gols1): vencedor = id_time2
-                else: vencedor = None
-                
-                cursor.execute("SELECT IFNULL(MAX(id_partida), 0) + 1 FROM Partidas")
-                novo_id = cursor.fetchone()[0]
-                
-                sql = "INSERT INTO Partidas (id_partida, data_partida, quantidade_gols_selecao_1, quantidade_gols_selecao_2, id_estadio, id_selecao_1, id_selecao_2, vencedor) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-                val = (novo_id, data, gols1, gols2, id_estadio, id_time1, id_time2, vencedor)
-                cursor.execute(sql, val)
-                conn.commit()
-                cursor.close()
-                conn.close()
-                
-                return True, "✅ Sucesso", {"color": "#059669"}, "A partida foi cadastrada com sucesso!", "refresh", "", None, None, None, 0, 0
-            except Exception as e:
-                return True, "❌ Erro", {"color": "#dc2626"}, f"Ocorreu um erro ao cadastrar no banco: {e}", no_update, no_update, no_update, no_update, no_update, no_update, no_update
-            
-        return no_update, no_update, no_update, no_update, no_update, no_update, no_update, no_update, no_update, no_update, no_update

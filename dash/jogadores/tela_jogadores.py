@@ -28,12 +28,12 @@ tela_jogadores = html.Div([
             dbc.Table([
                 html.Thead(
                     html.Tr([
-                        html.Th("NAME",          style={'padding': '12px 16px', 'color': '#4b5563', 'fontSize': '12px', 'fontWeight': '600', 'letterSpacing': '0.05em', 'width': '30%'}),
-                        html.Th("POSITION",      style={'padding': '12px 16px', 'color': '#4b5563', 'fontSize': '12px', 'fontWeight': '600', 'letterSpacing': '0.05em', 'width': '20%'}),
-                        html.Th("SHIRT NUMBER",  style={'padding': '12px 16px', 'color': '#4b5563', 'fontSize': '12px', 'fontWeight': '600', 'letterSpacing': '0.05em', 'width': '15%'}),
-                        html.Th("NATIONAL TEAM", style={'padding': '12px 16px', 'color': '#4b5563', 'fontSize': '12px', 'fontWeight': '600', 'letterSpacing': '0.05em', 'width': '15%'}),
-                        html.Th("AGE",           style={'padding': '12px 16px', 'color': '#4b5563', 'fontSize': '12px', 'fontWeight': '600', 'letterSpacing': '0.05em', 'width': '10%'}),
-                        html.Th("ACTIONS",       style={'padding': '12px 16px', 'color': '#4b5563', 'fontSize': '12px', 'fontWeight': '600', 'letterSpacing': '0.05em', 'textAlign': 'right', 'width': '10%'}),
+                        html.Th("NOME",          style={'padding': '12px 16px', 'color': '#4b5563', 'fontSize': '12px', 'fontWeight': '600', 'letterSpacing': '0.05em', 'width': '30%'}),
+                        html.Th("POSIÇÃO",      style={'padding': '12px 16px', 'color': '#4b5563', 'fontSize': '12px', 'fontWeight': '600', 'letterSpacing': '0.05em', 'width': '20%'}),
+                        html.Th("NÚMERO DA CAMISA",  style={'padding': '12px 16px', 'color': '#4b5563', 'fontSize': '12px', 'fontWeight': '600', 'letterSpacing': '0.05em', 'width': '15%'}),
+                        html.Th("SELEÇÃO NACIONAL", style={'padding': '12px 16px', 'color': '#4b5563', 'fontSize': '12px', 'fontWeight': '600', 'letterSpacing': '0.05em', 'width': '15%'}),
+                        html.Th("IDADE",           style={'padding': '12px 16px', 'color': '#4b5563', 'fontSize': '12px', 'fontWeight': '600', 'letterSpacing': '0.05em', 'width': '10%'}),
+                        html.Th("AÇÕES",       style={'padding': '12px 16px', 'color': '#4b5563', 'fontSize': '12px', 'fontWeight': '600', 'letterSpacing': '0.05em', 'textAlign': 'right', 'width': '10%'}),
                     ]),
                     style={'backgroundColor': '#eff6ff', 'borderBottom': '1px solid #e5e7eb'}
                 ),

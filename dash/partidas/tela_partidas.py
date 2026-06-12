@@ -55,6 +55,7 @@ tela_partidas = html.Div([
             html.Thead(
                 html.Tr([
                     html.Th("N° DA PARTIDA", style={"padding": "15px", "textAlign": "left", "color": "#6b7280", "fontSize": "12px", "borderBottom": "1px solid #eaeaea"}),
+                    html.Th("DATA", style={"padding": "15px", "textAlign": "left", "color": "#6b7280", "fontSize": "12px", "borderBottom": "1px solid #eaeaea"}),
                     html.Th("ESTÁDIO", style={"padding": "15px", "textAlign": "left", "color": "#6b7280", "fontSize": "12px", "borderBottom": "1px solid #eaeaea"}),
                     html.Th("TIME 1", style={"padding": "15px", "textAlign": "left", "color": "#6b7280", "fontSize": "12px", "borderBottom": "1px solid #eaeaea"}),
                     html.Th("TIME 2", style={"padding": "15px", "textAlign": "left", "color": "#6b7280", "fontSize": "12px", "borderBottom": "1px solid #eaeaea"}),

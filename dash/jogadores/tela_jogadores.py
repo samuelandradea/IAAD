@@ -7,8 +7,8 @@ tela_jogadores = html.Div([
 
         dbc.Row([
             dbc.Col([
-                html.H2("Gerenciamento de jogador", style={'color': '#111827', 'fontWeight': '700', 'fontSize': '28px', 'marginBottom': '5px'}),
-                html.P("Cadastro de todos os atletas participantes da Copa do Mundo FIFA 2026.", style={'color': '#6b7280', 'fontSize': '14px'})
+                html.H2("Player Management", style={'color': '#111827', 'fontWeight': '700', 'fontSize': '28px', 'marginBottom': '5px'}),
+                html.P("Registry of all competing athletes for the FIFA World Cup 2026 database.", style={'color': '#6b7280', 'fontSize': '14px'})
             ], lg=8, md=7, sm=12),
             dbc.Col([
                 dbc.Button(

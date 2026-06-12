@@ -1,7 +1,6 @@
 from dash import html
 import dash_bootstrap_components as dbc
 
-
 tela_jogadores = html.Div([
 
     dbc.Container([
@@ -14,7 +13,7 @@ tela_jogadores = html.Div([
             dbc.Col([
                 dbc.Button(
                     "+ Cadastrar Novo Jogador",
-                    id='btn-ir-cadastro',  # ← adicione este id
+                    id='btn-ir-cadastro',
                     color="success",
                     style={
                         'backgroundColor': '#047857', 'border': 'none', 'padding': '10px 20px',

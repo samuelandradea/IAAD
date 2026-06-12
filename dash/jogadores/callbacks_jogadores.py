@@ -1,14 +1,12 @@
 import math
 from dash.exceptions import PreventUpdate
 import mysql.connector
-import pandas as pd
 from dash import Input, Output, State, ctx, ALL, html
 import dash_bootstrap_components as dbc
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
-
 
 JOGADORES_POR_PAGINA = 5
 
@@ -25,11 +23,11 @@ def obter_conexao():
 def buscar_jogadores():
     try:
         conn = obter_conexao()
-        cursor = conn.cursor(dictionary=True)  
+        cursor = conn.cursor(dictionary=True)
         cursor.execute("""
             SELECT 
-                j.nome_jogador AS nome,
-                j.posicao      AS posicao,
+                j.nome_jogador  AS nome,
+                j.posicao       AS posicao,
                 j.numero_camisa AS numero,
                 s.nome_selecao  AS selecao,
                 j.id_jogador    AS id_jogador,
@@ -49,9 +47,8 @@ def buscar_jogadores():
 
 
 def registrar_callbacks(app):
-    """Chamada uma vez no app.py para registrar todos os callbacks desta tela."""
 
-    # CALLBACK 1 — atualiza o Store com a página clicada
+    # CALLBACK 1 — atualiza página via botões de paginação
     @app.callback(
         Output('jogadores-pagina-atual', 'data'),
         Input({'type': 'btn-pagina-jogador', 'index': ALL}, 'n_clicks'),
@@ -64,15 +61,46 @@ def registrar_callbacks(app):
             raise PreventUpdate
 
         idx = triggered['index']
+        if idx == 0:   return max(1, pagina_atual - 1)
+        if idx == -1:  return pagina_atual + 1
+        return idx
 
-        if idx == 0:    # botão 
-            return max(1, pagina_atual - 1)
-        if idx == -1:   # botão >
-            return pagina_atual + 1  # o disabled já impede passar do limite
+    # CALLBACK 2 — DELETE
+    @app.callback(
+        Output('jogadores-pagina-atual', 'data', allow_duplicate=True),
+        Input({'type': 'btn-deletar-jogador', 'index': ALL}, 'n_clicks'),
+        State('jogadores-pagina-atual', 'data'),
+        prevent_initial_call=True
+    )
+    def deletar_jogador(n_clicks, pagina_atual):
+        triggered = ctx.triggered_id
+        if not triggered:
+            raise PreventUpdate
 
-        return idx  # número de página direto
+        botoes = ctx.inputs_list[0]
+        clicado = next((b for b in botoes if b['id']['index'] == triggered['index']), None)
+        if not clicado or not clicado.get('value'):
+            raise PreventUpdate
 
-    # CALLBACK 2 — renderiza tbody + info + botões de paginação
+        id_jogador = triggered['index']
+
+        try:
+            conn = obter_conexao()
+            cursor = conn.cursor()
+            cursor.execute(
+                "DELETE FROM `Copa do Mundo de Futebol`.`Jogadores` WHERE id_jogador = %s",
+                (id_jogador,)
+            )
+            conn.commit()
+            cursor.close()
+            conn.close()
+            print(f">>> Jogador {id_jogador} deletado com sucesso")
+        except Exception as e:
+            print(f"Erro ao deletar jogador: {e}")
+
+        return pagina_atual
+
+    # CALLBACK 3 — renderiza tabela + paginação
     @app.callback(
         Output('tabela-jogadores-body',   'children'),
         Output('jogadores-info-texto',    'children'),
@@ -81,8 +109,8 @@ def registrar_callbacks(app):
         Input('btn-jogadores',            'n_clicks'),
     )
     def renderizar_tabela(pagina_atual, _):
-        jogadores     = buscar_jogadores()
-        total         = len(jogadores)
+        jogadores = buscar_jogadores()
+        total     = len(jogadores)
 
         if total == 0:
             linha_vazia = html.Tr([
@@ -115,10 +143,12 @@ def registrar_callbacks(app):
                     ),
                     html.Span(
                         "🗑️",
+                        id={'type': 'btn-deletar-jogador', 'index': j['id_jogador']},
+                        n_clicks=0,
                         style={'cursor': 'pointer', 'color': '#ef4444', 'fontSize': '16px'}
                     )
-                ], style={'textAlign': 'right', 'padding': '14px 16px'}),  
-            ], style={'borderBottom': '1px solid #f3f4f6', 'verticalAlign': 'middle'})  
+                ], style={'textAlign': 'right', 'padding': '14px 16px'}),
+            ], style={'borderBottom': '1px solid #f3f4f6', 'verticalAlign': 'middle'})
             for j in slice_
         ]
 
@@ -139,15 +169,12 @@ def registrar_callbacks(app):
                 return [1, '...', total-4, total-3, total-2, total-1, total]
             return [1, '...', atual-1, atual, atual+1, '...', total]
 
-        botoes = []
-
-        # Botão < com index fixo 'prev'
-        botoes.append(
+        botoes = [
             dbc.Button("<",
-                    id={'type': 'btn-pagina-jogador', 'index': 0},  # 0 = prev
-                    color="light", size="sm", style=s_nav,
-                    disabled=(pagina_atual == 1))
-        )
+                       id={'type': 'btn-pagina-jogador', 'index': 0},
+                       color="light", size="sm", style=s_nav,
+                       disabled=(pagina_atual == 1))
+        ]
 
         for p in paginas_visiveis(pagina_atual, total_paginas):
             if p == '...':
@@ -155,20 +182,18 @@ def registrar_callbacks(app):
             else:
                 botoes.append(
                     dbc.Button(str(p),
-                            id={'type': 'btn-pagina-jogador', 'index': p},
-                            color="success" if p == pagina_atual else "light",
-                            size="sm",
-                            style=s_ativo if p == pagina_atual else s_normal)
+                               id={'type': 'btn-pagina-jogador', 'index': p},
+                               color="success" if p == pagina_atual else "light",
+                               size="sm",
+                               style=s_ativo if p == pagina_atual else s_normal)
                 )
 
-        # Botão > com index fixo -1
         botoes.append(
             dbc.Button(">",
-                    id={'type': 'btn-pagina-jogador', 'index': -1},  # -1 = next
-                    color="light", size="sm",
-                    style={'border': '1px solid #e5e7eb', 'color': '#4b5563'},
-                    disabled=(pagina_atual == total_paginas))
+                       id={'type': 'btn-pagina-jogador', 'index': -1},
+                       color="light", size="sm",
+                       style={'border': '1px solid #e5e7eb', 'color': '#4b5563'},
+                       disabled=(pagina_atual == total_paginas))
         )
-        
 
         return linhas, info, botoes

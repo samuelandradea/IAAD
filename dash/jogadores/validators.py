@@ -2,7 +2,7 @@
 
 def tratar_dados_jogador(nome_bruto, selecao_bruta, camisa_bruta):
     """
-    Age como um 'trigger' ou 'middleware' para limpar e validar
+    Age como um 'trigger' 
     """
     #tratando o texto
     nome_formatado = nome_bruto.strip().title()
